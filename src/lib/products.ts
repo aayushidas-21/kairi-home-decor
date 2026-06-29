@@ -1,0 +1,135 @@
+import p1 from "@/assets/p1.jpg";
+import p2 from "@/assets/p2.jpg";
+import p3 from "@/assets/p3.jpg";
+import p4 from "@/assets/p4.jpg";
+import p5 from "@/assets/p5.jpg";
+import p6 from "@/assets/p6.jpg";
+import p7 from "@/assets/p7.jpg";
+import p8 from "@/assets/p8.jpg";
+
+export type Product = {
+  id: string;
+  name: string;
+  descriptor: string;
+  price: number;
+  image: string;
+  images?: string[];
+  category: "Vases & Ceramics" | "Cushions & Throws" | "Wall Decor" | "Candles & Scents";
+  colors?: string[];
+  bestseller?: boolean;
+  isNew?: boolean;
+  story: string;
+  care: string;
+};
+
+export const products: Product[] = [
+  {
+    id: "ceramic-bud-vase",
+    name: "Mira Bud Vase",
+    descriptor: "Hand-thrown stoneware",
+    price: 1490,
+    image: p1,
+    category: "Vases & Ceramics",
+    colors: ["#EDE2D2", "#B5845A", "#2C2420"],
+    isNew: true,
+    bestseller: true,
+    story:
+      "Wheel-thrown in small batches by a studio in Pondicherry. Each piece carries the soft fingerprints of its maker — no two ever quite the same.",
+    care: "Wipe with a soft, dry cloth. Hand wash only. Not microwave safe.",
+  },
+  {
+    id: "linen-cushion-oat",
+    name: "Aanvi Linen Cushion",
+    descriptor: "Stonewashed oat linen, 18×18",
+    price: 1290,
+    image: p2,
+    category: "Cushions & Throws",
+    colors: ["#EDE2D2", "#7A8C6E", "#B5845A"],
+    isNew: true,
+    story:
+      "Woven from European flax linen and softened with a slow stonewash for a lived-in drape from day one.",
+    care: "Machine wash cold, gentle cycle. Tumble dry low. Cover only — insert sold separately.",
+  },
+  {
+    id: "rattan-wall-mirror",
+    name: "Surya Rattan Mirror",
+    descriptor: "Handwoven cane, 24\" round",
+    price: 3290,
+    image: p3,
+    category: "Wall Decor",
+    isNew: true,
+    bestseller: true,
+    story:
+      "A nod to mid-century cane work, woven by artisans in Kerala over the course of three days per piece.",
+    care: "Dust gently. Keep away from prolonged direct sunlight to preserve the cane.",
+  },
+  {
+    id: "amber-soy-candle",
+    name: "Dusk Soy Candle",
+    descriptor: "Sandalwood, amber, oud — 45hr burn",
+    price: 990,
+    image: p4,
+    category: "Candles & Scents",
+    isNew: true,
+    story:
+      "Hand-poured in amber glass with a clean-burning soy and coconut wax blend. Notes of warm sandalwood, smoked amber, and a whisper of oud.",
+    care: "Trim wick to 5mm before each burn. Never leave unattended.",
+  },
+  {
+    id: "macrame-hanging",
+    name: "Saanjh Macramé",
+    descriptor: "Hand-knotted cotton on teak",
+    price: 1890,
+    image: p5,
+    category: "Wall Decor",
+    isNew: true,
+    story:
+      "Knotted by hand in soft natural cotton on a hand-turned teak dowel. A quiet, tactile centerpiece for any bare wall.",
+    care: "Spot clean. Gently comb fringe to refresh.",
+  },
+  {
+    id: "terracotta-planter",
+    name: "Miti Terracotta Planter",
+    descriptor: "Unglazed clay, 5\" pot",
+    price: 690,
+    image: p6,
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "Slow-fired terracotta from Khurja, breathable and porous — exactly how indoor plants like to live.",
+    care: "Add a saucer to protect surfaces. Develops a beautiful patina with age.",
+  },
+  {
+    id: "pampas-bunch",
+    name: "Pampas Bundle",
+    descriptor: "Naturally dried, ~24\" stems",
+    price: 1190,
+    image: p7,
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "Sun-dried pampas in their natural cream. A lifetime arrangement that asks nothing of you.",
+    care: "Shake gently to refresh. Keep away from humidity.",
+  },
+  {
+    id: "woven-throw",
+    name: "Anaya Throw Blanket",
+    descriptor: "Handloom cotton, fringe edge",
+    price: 2490,
+    image: p8,
+    category: "Cushions & Throws",
+    bestseller: true,
+    story:
+      "Woven on traditional handlooms in Panipat with soft mercerised cotton and a generous fringed edge.",
+    care: "Machine wash cold, line dry. Iron on low if needed.",
+  },
+];
+
+export const categories = [
+  { name: "Vases & Ceramics", slug: "vases-ceramics" },
+  { name: "Cushions & Throws", slug: "cushions-throws" },
+  { name: "Wall Decor", slug: "wall-decor" },
+  { name: "Candles & Scents", slug: "candles-scents" },
+] as const;
+
+export const getProduct = (id: string) => products.find((p) => p.id === id);
