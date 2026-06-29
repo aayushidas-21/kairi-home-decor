@@ -23,7 +23,7 @@ function About() {
           Quiet objects, <span className="italic">loved homes.</span>
         </h1>
         <p className="mt-8 text-lg leading-relaxed text-espresso/75">
-          Kairi began in a small studio in Bengaluru with one stubborn idea — that the things in our homes
+          Kairi began in a small studio in Siliguri with one stubborn idea — that the things in our homes
           should feel like they belong to us. We work with independent makers across India, in clay, linen,
           cane and wax, to bring you small-batch pieces that are made slowly and carry the gentle marks of
           the hands that made them.
