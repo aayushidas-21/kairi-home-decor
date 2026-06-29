@@ -1,3 +1,17 @@
+# Node / Dependencies
+node_modules/
+jspm_packages/
+web_modules/
+
+# Production Builds
+dist/
+dist-ssr/
+build/
+.output/
+.vinxi/
+.tanstack/
+.nitro/
+
 # Logs
 logs
 *.log
@@ -7,26 +21,75 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-.output
-.vinxi
-.tanstack/**
-.nitro
-*.local
+# Environment Variables & Secrets (CRITICAL SECURITY)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+.env.*
+.envrc
+.direnv
+*.pem
+*.key
+*.pub
+*.der
+*.cert
+*.pfx
+*.p12
+*.crt
+secring.gpg
+*credentials*.json
+*secret*.json
+jwt.txt
+certs/
+private/
 
-# Wrangler / Cloudflare
+# Vercel / Netlify / Cloudflare (Deployment Caches & Link Tokens)
+.vercel/
+.netlify/
 .wrangler/
 .dev.vars
 
-# Editor directories and files
+# Package Manager Credentials
+.npmrc
+.yarnrc
+
+# Database / SQLite
+*.db
+*.sqlite
+*.sqlite3
+*.sql
+*.dump
+
+# OS & System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Editor & IDE Configs
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+.history/
+.project
+.classpath
+.settings/
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+.playwright/
