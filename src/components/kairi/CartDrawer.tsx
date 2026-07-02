@@ -2,11 +2,10 @@ import { useEffect } from "react";
 import { X, Minus, Plus, Trash2 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useStore, formatINR } from "@/lib/store";
-import { getProduct } from "@/lib/products";
 
 export function CartDrawer() {
-  const { cart, cartOpen, setCartOpen, setQty, removeFromCart } = useStore();
-  const items = cart.map((i) => ({ ...i, product: getProduct(i.id) })).filter((i) => i.product);
+  const { cart, cartOpen, setCartOpen, setQty, removeFromCart, products } = useStore();
+  const items = cart.map((i) => ({ ...i, product: products.find((p) => p.id === i.id) })).filter((i) => i.product);
   const subtotal = items.reduce((s, i) => s + (i.product?.price ?? 0) * i.qty, 0);
 
   useEffect(() => {

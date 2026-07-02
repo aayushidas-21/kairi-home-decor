@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Heart } from "lucide-react";
+import { Heart, Eye } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { type Product } from "@/lib/products";
 import { useStore, formatINR } from "@/lib/store";
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addToCart, toggleWishlist, wishlist } = useStore();
+  const { addToCart, toggleWishlist, wishlist, setQuickViewId } = useStore();
   const liked = wishlist.includes(product.id);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
 
@@ -56,6 +56,13 @@ export function ProductCard({ product }: { product: Product }) {
             className="h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
           />
         </Link>
+        <button
+          aria-label="Quick View"
+          onClick={() => setQuickViewId(product.id)}
+          className="absolute right-14 top-3 grid h-9 w-9 place-items-center rounded-full bg-linen/85 text-espresso opacity-60 md:opacity-0 backdrop-blur transition-all group-hover:opacity-100 hover:bg-linen focus-visible:opacity-100"
+        >
+          <Eye size={15} strokeWidth={1.6} />
+        </button>
         <button
           aria-label="Wishlist"
           onClick={() => {

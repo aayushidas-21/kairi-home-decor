@@ -4,7 +4,8 @@ import { useRef } from "react";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
 import { ProductCard } from "@/components/kairi/ProductCard";
-import { products, categories } from "@/lib/products";
+import { categories } from "@/lib/products";
+import { useStore } from "@/lib/store";
 import hero from "@/assets/hero.jpg";
 import brandStory from "@/assets/brand-story.jpg";
 import catVases from "@/assets/cat-vases.jpg";
@@ -174,6 +175,7 @@ function Categories() {
 }
 
 function NewArrivals() {
+  const { products } = useStore();
   const items = products.filter((p) => p.isNew).slice(0, 8);
   return (
     <section className="mx-auto max-w-[1400px] px-6 py-16 lg:px-10">
@@ -240,6 +242,7 @@ function BrandStory() {
 }
 
 function Bestsellers() {
+  const { products } = useStore();
   const items = [...products.filter((p) => p.bestseller), ...products].slice(0, 8);
   const ref = useRef<HTMLDivElement | null>(null);
   const scroll = (dir: 1 | -1) =>

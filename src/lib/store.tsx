@@ -1,4 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, setDoc, doc } from "firebase/firestore";
+import { products as staticProducts, type Product } from "@/lib/products";
 
 type CartItem = { id: string; qty: number };
 
@@ -14,6 +17,10 @@ type StoreCtx = {
   setQty: (id: string, qty: number) => void;
   toggleWishlist: (id: string) => void;
   cartCount: number;
+  products: Product[];
+  loadingProducts: boolean;
+  quickViewId: string | null;
+  setQuickViewId: (id: string | null) => void;
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
@@ -34,11 +41,59 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  
+  // Dynamic Firestore products state with local fallback
+  const [products, setProducts] = useState<Product[]>(staticProducts);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [quickViewId, setQuickViewId] = useState<string | null>(null);
 
   useEffect(() => {
     setCart(read<CartItem[]>("kairi.cart", []));
     setWishlist(read<string[]>("kairi.wishlist", []));
     setHydrated(true);
+  }, []);
+
+  // Fetch products dynamically from Firestore and seed if empty
+  useEffect(() => {
+    async function syncProducts() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        if (querySnapshot.empty) {
+          console.log("Firestore products collection is empty. Seeding with default products...");
+          // Seed products
+          for (const p of staticProducts) {
+            await setDoc(doc(db, "products", p.id), {
+              id: p.id,
+              name: p.name,
+              descriptor: p.descriptor,
+              price: p.price,
+              image: p.image,
+              category: p.category,
+              story: p.story,
+              care: p.care,
+              colors: p.colors || null,
+              isNew: p.isNew || false,
+              bestseller: p.bestseller || false
+            });
+          }
+          console.log("Seeding complete!");
+          setProducts(staticProducts);
+        } else {
+          const list: Product[] = [];
+          querySnapshot.forEach((d) => {
+            list.push(d.data() as Product);
+          });
+          setProducts(list);
+        }
+      } catch (error) {
+        console.error("Error syncing products with Firestore:", error);
+        // Offline / Permission fallback
+        setProducts(staticProducts);
+      } finally {
+        setLoadingProducts(false);
+      }
+    }
+    syncProducts();
   }, []);
 
   useEffect(() => {
@@ -70,8 +125,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       toggleWishlist: (id) =>
         setWishlist((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])),
       cartCount: cart.reduce((s, i) => s + i.qty, 0),
+      products,
+      loadingProducts,
+      quickViewId,
+      setQuickViewId,
     }),
-    [cart, wishlist, cartOpen, searchOpen],
+    [cart, wishlist, cartOpen, searchOpen, products, loadingProducts, quickViewId],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

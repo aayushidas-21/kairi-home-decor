@@ -3,6 +3,7 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { CartDrawer } from "./CartDrawer";
 import { SearchModal } from "./SearchModal";
+import { QuickViewModal } from "./QuickViewModal";
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <Footer />
       <CartDrawer />
       <SearchModal />
+      <QuickViewModal />
     </div>
   );
 }

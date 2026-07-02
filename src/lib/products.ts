@@ -14,6 +14,10 @@ import p13 from "@/assets/p13.jpg";
 import p14 from "@/assets/p14.jpg";
 import p15 from "@/assets/p15.jpg";
 import p16 from "@/assets/p16.jpg";
+import p17 from "@/assets/p17.jpg";
+import p18 from "@/assets/p18.jpg";
+import p19 from "@/assets/p19.jpg";
+import p20 from "@/assets/p20.jpg";
 
 export type Product = {
   id: string;
@@ -229,6 +233,55 @@ export const products: Product[] = [
     story:
       "Steam-distilled from wild vetiver (Khus) roots in Kannauj. A cooling, earthy aroma mist for linens and spaces.",
     care: "Store in a cool, dark place. Spray from a distance of 10 inches.",
+  },
+  {
+    id: "linen-curtains-cream",
+    name: "Aanya Linen Curtains",
+    descriptor: "100% Belgian flax linen, custom drape",
+    price: 3490,
+    image: p17,
+    category: "Cushions & Throws",
+    isNew: true,
+    bestseller: true,
+    story:
+      "Woven from premium organic Belgian flax and tailored in our studio. Filters light softly while adding an airy, natural linen texture.",
+    care: "Dry clean recommended. Gentle machine wash cold if needed. Iron on warm while damp.",
+  },
+  {
+    id: "linen-curtains-rust",
+    name: "Soham Terracotta Curtains",
+    descriptor: "Stonewashed linen curtains",
+    price: 3690,
+    image: p18,
+    category: "Cushions & Throws",
+    isNew: true,
+    story:
+      "Stonewashed for unmatched softness and draped in a rich, earthy terracotta tone. Brings warmth and character to minimalist rooms.",
+    care: "Dry clean only. Hang immediately to preserve the natural linen drape.",
+  },
+  {
+    id: "brass-abstract-showpiece",
+    name: "Dhyana Brass Showpiece",
+    descriptor: "Abstract geometric tabletop sculpture",
+    price: 2290,
+    image: p19,
+    category: "Wall Decor",
+    bestseller: true,
+    story:
+      "A hand-welded abstract sculpture crafted from brass sheet metal. Features clean lines, organic geometry, and a polished warm glow.",
+    care: "Wipe with a soft dry cloth. Avoid exposure to moisture to prevent tarnish.",
+  },
+  {
+    id: "wabi-sabi-clay-sculptures",
+    name: "Wabi-Sabi Clay Sculptures (Set of 2)",
+    descriptor: "Unglazed textured clay shapes",
+    price: 1990,
+    image: p20,
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "A set of two primitive, organic unglazed stoneware shapes. Designed to bring wabi-sabi calmness and rustic texture to your console or shelf.",
+    care: "Handle with clean dry hands. Clean dust using a soft dry brush.",
   },
 ];
 

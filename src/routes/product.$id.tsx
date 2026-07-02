@@ -4,12 +4,24 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
 import { ProductCard } from "@/components/kairi/ProductCard";
-import { getProduct, products } from "@/lib/products";
+import { getProduct } from "@/lib/products";
 import { useStore, formatINR } from "@/lib/store";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 export const Route = createFileRoute("/product/$id")({
-  loader: ({ params }) => {
-    const product = getProduct(params.id);
+  loader: async ({ params }) => {
+    let product = getProduct(params.id);
+    if (!product) {
+      try {
+        const snap = await getDoc(doc(db, "products", params.id));
+        if (snap.exists()) {
+          product = snap.data() as any;
+        }
+      } catch (err) {
+        console.error("Firestore lookup failed:", err);
+      }
+    }
     if (!product) throw notFound();
     return { product };
   },
@@ -38,7 +50,7 @@ export const Route = createFileRoute("/product/$id")({
 
 function PDP() {
   const { product } = Route.useLoaderData();
-  const { addToCart, toggleWishlist, wishlist, setCartOpen } = useStore();
+  const { addToCart, toggleWishlist, wishlist, setCartOpen, products } = useStore();
   const [qty, setQty] = useState(1);
   const [color, setColor] = useState(product.colors?.[0]);
   const [open, setOpen] = useState<string | null>("details");

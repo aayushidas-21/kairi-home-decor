@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Layout } from "@/components/kairi/Layout";
 import { ProductCard } from "@/components/kairi/ProductCard";
-import { products, categories } from "@/lib/products";
+import { categories } from "@/lib/products";
+import { useStore } from "@/lib/store";
 
 // Curated Collection assets & metadata
 import catVases from "@/assets/cat-vases.jpg";
@@ -30,6 +31,7 @@ export const Route = createFileRoute("/shop")({
 });
 
 function Shop() {
+  const { products } = useStore();
   const [cat, setCat] = useState<string>("All");
   const [maxPrice, setMaxPrice] = useState(3500);
 
@@ -38,7 +40,7 @@ function Shop() {
       products.filter(
         (p) => (cat === "All" || p.category === cat) && p.price <= maxPrice,
       ),
-    [cat, maxPrice],
+    [cat, maxPrice, products],
   );
 
   return (

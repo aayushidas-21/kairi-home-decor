@@ -1,11 +1,10 @@
 import { Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { products } from "@/lib/products";
 import { useStore, formatINR } from "@/lib/store";
 
 export function SearchModal() {
-  const { searchOpen, setSearchOpen } = useStore();
+  const { searchOpen, setSearchOpen, products } = useStore();
   const [q, setQ] = useState("");
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export function SearchModal() {
         p.descriptor.toLowerCase().includes(s) ||
         p.category.toLowerCase().includes(s),
     );
-  }, [q]);
+  }, [q, products]);
 
   if (!searchOpen) return null;
 

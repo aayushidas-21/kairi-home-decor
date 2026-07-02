@@ -4,7 +4,7 @@ import { z } from "zod";
 import { Lock, ShieldCheck, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
-import { getProduct } from "@/lib/products";
+
 import { useStore, formatINR } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -49,9 +49,9 @@ type Errors = Partial<Record<keyof FormData, string>>;
 
 function Checkout() {
   const navigate = useNavigate();
-  const { cart } = useStore();
+  const { cart, products } = useStore();
   const { user, profile } = useAuth();
-  const items = cart.map((i) => ({ ...i, product: getProduct(i.id) })).filter((i) => i.product);
+  const items = cart.map((i) => ({ ...i, product: products.find((p) => p.id === i.id) })).filter((i) => i.product);
   const subtotal = items.reduce((s, i) => s + (i.product?.price ?? 0) * i.qty, 0);
   const shipping = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 99;
   const total = subtotal + shipping;
