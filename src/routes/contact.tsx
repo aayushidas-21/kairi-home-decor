@@ -150,7 +150,7 @@ function ContactPage() {
                       required
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Ayush Das"
+                      placeholder="Aayushi Das"
                       className="w-full rounded-lg border border-divider bg-linen px-4 py-3 text-sm text-espresso placeholder-taupe/65 outline-none transition-all focus:border-clay focus:ring-1 focus:ring-clay"
                     />
                   </div>
