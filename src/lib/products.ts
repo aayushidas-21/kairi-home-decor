@@ -18,6 +18,11 @@ import p17 from "@/assets/p17.jpg";
 import p18 from "@/assets/p18.jpg";
 import p19 from "@/assets/p19.jpg";
 import p20 from "@/assets/p20.jpg";
+import p21 from "@/assets/p21.png";
+import p22 from "@/assets/p22.jpg";
+import p23 from "@/assets/p23.jpg";
+import p24 from "@/assets/p24.jpg";
+import p25 from "@/assets/p25.jpg";
 
 export type Product = {
   id: string;
@@ -282,6 +287,67 @@ export const products: Product[] = [
     story:
       "A set of two primitive, organic unglazed stoneware shapes. Designed to bring wabi-sabi calmness and rustic texture to your console or shelf.",
     care: "Handle with clean dry hands. Clean dust using a soft dry brush.",
+  },
+  {
+    id: "minimalist-ceramic-trio",
+    name: "Duo Ceramic Trio Set",
+    descriptor: "Forest, Alabaster & Blush ceramics",
+    price: 2890,
+    image: p21,
+    category: "Vases & Ceramics",
+    isNew: true,
+    bestseller: true,
+    story:
+      "A curation of three contrasting clean-line glazed ceramic shapes: a forest green orb vase, an elegant chalk-white pitcher, and a footed pastel pink dish. Designed to sit together as a modern sculptural centerpiece.",
+    care: "Handwash only with a soft damp cloth. Treat with care.",
+  },
+  {
+    id: "yellow-ceramic-teapot",
+    name: "Sari Ceramic Teapot",
+    descriptor: "Matte canary yellow, wood handle",
+    price: 1790,
+    image: p22,
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "A modern abstract yellow ceramic teapot with a clean geometric wooden handle. Fuses Nordic functionality with a bold pop of playful sun-washed yellow.",
+    care: "Gentle hand wash. Dry the wooden handle immediately after washing.",
+  },
+  {
+    id: "crescent-clay-bookends",
+    name: "Krescent Clay Bookends",
+    descriptor: "Terracotta arc shape, set of 2",
+    price: 1590,
+    image: p23,
+    category: "Wall Decor",
+    isNew: true,
+    story:
+      "A set of two heavy unglazed terracotta bookends in abstract crescent shapes. Provides architectural weight and wabi-sabi character to bookshelf stylings.",
+    care: "Wipe with a soft dry cloth. Do not wash.",
+  },
+  {
+    id: "cobalt-donut-vase",
+    name: "Neel Donut Vase",
+    descriptor: "Cobalt blue circle vase",
+    price: 1990,
+    image: p24,
+    category: "Vases & Ceramics",
+    bestseller: true,
+    story:
+      "An abstract circle-donut shape vase finished with a deep matte cobalt blue glaze. Striking, bold, and clean, it makes an statement on its own or holding a single dry twig.",
+    care: "Hand wash only. Dust dry.",
+  },
+  {
+    id: "pastel-nesting-bowls",
+    name: "Mila Nesting Bowls (Set of 3)",
+    descriptor: "Pastel ceramic bowls in peach, lavender & mint",
+    price: 1390,
+    image: p25,
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "A nesting trio of small ceramic bowls in soft Danish pastel tones (mint, lavender, peach). Features clean organic shapes with a satin-matte glazed finish.",
+    care: "Dishwasher and microwave safe.",
   },
 ];
 
