@@ -1,11 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { Lock, ShieldCheck, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
 import { getProduct } from "@/lib/products";
 import { useStore, formatINR } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -46,6 +50,7 @@ type Errors = Partial<Record<keyof FormData, string>>;
 function Checkout() {
   const navigate = useNavigate();
   const { cart } = useStore();
+  const { user, profile } = useAuth();
   const items = cart.map((i) => ({ ...i, product: getProduct(i.id) })).filter((i) => i.product);
   const subtotal = items.reduce((s, i) => s + (i.product?.price ?? 0) * i.qty, 0);
   const shipping = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 99;
@@ -71,6 +76,16 @@ function Checkout() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
+  useEffect(() => {
+    if (profile) {
+      setForm((f) => ({
+        ...f,
+        email: profile.email || f.email,
+        fullName: profile.fullName || f.fullName,
+      }));
+    }
+  }, [profile]);
+
   const set = <K extends keyof FormData>(k: K, v: FormData[K]) => {
     setForm((f) => ({ ...f, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: undefined }));
@@ -93,7 +108,7 @@ function Checkout() {
     );
   }
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
@@ -134,6 +149,34 @@ function Checkout() {
     setSubmitting(true);
     const orderNumber = `KAI-${Date.now().toString(36).toUpperCase()}`;
     try {
+      // Save order to Firestore
+      await setDoc(doc(db, "orders", orderNumber), {
+        orderNumber,
+        userId: user?.uid || null,
+        email: form.email,
+        name: form.fullName,
+        phone: form.phone,
+        shippingAddress: {
+          address1: form.address1,
+          address2: form.address2,
+          city: form.city,
+          state: form.state,
+          pincode: form.pincode,
+          country: form.country,
+        },
+        items: items.map((item) => ({
+          id: item.id,
+          name: item.product?.name || "Unknown Item",
+          price: item.product?.price || 0,
+          qty: item.qty,
+        })),
+        total,
+        itemCount: items.reduce((s, i) => s + i.qty, 0),
+        payMethod: form.payMethod,
+        createdAt: new Date().toISOString(),
+        status: "processing",
+      });
+
       sessionStorage.setItem(
         "kairi.lastOrder",
         JSON.stringify({
@@ -147,8 +190,11 @@ function Checkout() {
         }),
       );
       localStorage.removeItem("kairi.cart");
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.error("Failed to save order to Firestore:", err);
+      toast.error("Failed to process order. Please try again.");
+      setSubmitting(false);
+      return;
     }
     setTimeout(() => {
       navigate({ to: "/order/$id", params: { id: orderNumber } });

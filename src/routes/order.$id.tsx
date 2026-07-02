@@ -3,6 +3,8 @@ import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/kairi/Layout";
 import { formatINR } from "@/lib/store";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 type Order = {
   orderNumber: string;
@@ -29,13 +31,34 @@ function OrderConfirmation() {
   const [order, setOrder] = useState<Order | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = sessionStorage.getItem("kairi.lastOrder");
-      if (raw) setOrder(JSON.parse(raw));
-    } catch {
-      /* ignore */
+    async function loadOrder() {
+      try {
+        // Try Firestore first
+        const orderSnap = await getDoc(doc(db, "orders", id));
+        if (orderSnap.exists()) {
+          setOrder(orderSnap.data() as Order);
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to load order from Firestore, falling back to session storage:", err);
+      }
+
+      // Fallback to sessionStorage
+      try {
+        const raw = sessionStorage.getItem("kairi.lastOrder");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.orderNumber === id) {
+            setOrder(parsed);
+          }
+        }
+      } catch {
+        /* ignore */
+      }
     }
-  }, []);
+
+    loadOrder();
+  }, [id]);
 
   const payLabel =
     order?.payMethod === "card"
