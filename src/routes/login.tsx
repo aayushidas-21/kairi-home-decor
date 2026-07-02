@@ -16,6 +16,33 @@ export const Route = createFileRoute("/login")({
   component: LoginComponent,
 });
 
+function getFriendlyErrorMessage(err: any): string {
+  if (!err) return "An authentication error occurred.";
+  
+  const code = err.code || "";
+  
+  switch (code) {
+    case "auth/email-already-in-use":
+      return "This email is already registered. Please sign in instead.";
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+      return "Incorrect email or password. Please try again.";
+    case "auth/user-not-found":
+      return "No account found with this email. Please register first.";
+    case "auth/weak-password":
+      return "Password is too weak. It must be at least 6 characters long.";
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Access to this account has been temporarily disabled. Please try again later.";
+    default:
+      if (err.message && err.message.includes("permission")) {
+        return "Insufficient database permissions. Please contact support.";
+      }
+      return err.message?.replace(/^Firebase:\s*/, "") || "An authentication error occurred.";
+  }
+}
+
 function LoginComponent() {
   const [view, setView] = useState<"login" | "register" | "forgot">("login");
   const [email, setEmail] = useState("");
@@ -71,7 +98,7 @@ function LoginComponent() {
       }
     } catch (err: any) {
       console.error(err);
-      toast.error(err.message || "An authentication error occurred.");
+      toast.error(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
