@@ -27,7 +27,7 @@ export function Footer() {
             { label: "Shipping", to: "/about" },
             { label: "Returns", to: "/about" },
             { label: "FAQ", to: "/about" },
-            { label: "Contact Us", to: "/about" },
+            { label: "Contact Us", to: "/contact" },
           ]}
         />
         <div>

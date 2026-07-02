@@ -14,6 +14,7 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JournalRouteImport } from './routes/journal'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CollectionsRouteImport } from './routes/collections'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AdminRouteImport } from './routes/admin'
@@ -45,6 +46,11 @@ const LoginRoute = LoginRouteImport.update({
 const JournalRoute = JournalRouteImport.update({
   id: '/journal',
   path: '/journal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CollectionsRoute = CollectionsRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
   '/collections': typeof CollectionsRoute
+  '/contact': typeof ContactRoute
   '/journal': typeof JournalRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRoute
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
   '/collections': typeof CollectionsRoute
+  '/contact': typeof ContactRoute
   '/journal': typeof JournalRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRoute
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/checkout': typeof CheckoutRoute
   '/collections': typeof CollectionsRoute
+  '/contact': typeof ContactRoute
   '/journal': typeof JournalRoute
   '/login': typeof LoginRoute
   '/shop': typeof ShopRoute
@@ -134,6 +143,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/checkout'
     | '/collections'
+    | '/contact'
     | '/journal'
     | '/login'
     | '/shop'
@@ -148,6 +158,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/checkout'
     | '/collections'
+    | '/contact'
     | '/journal'
     | '/login'
     | '/shop'
@@ -162,6 +173,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/checkout'
     | '/collections'
+    | '/contact'
     | '/journal'
     | '/login'
     | '/shop'
@@ -177,6 +189,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   CheckoutRoute: typeof CheckoutRoute
   CollectionsRoute: typeof CollectionsRoute
+  ContactRoute: typeof ContactRoute
   JournalRoute: typeof JournalRoute
   LoginRoute: typeof LoginRoute
   ShopRoute: typeof ShopRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/journal'
       fullPath: '/journal'
       preLoaderRoute: typeof JournalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/collections': {
@@ -281,6 +301,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   CheckoutRoute: CheckoutRoute,
   CollectionsRoute: CollectionsRoute,
+  ContactRoute: ContactRoute,
   JournalRoute: JournalRoute,
   LoginRoute: LoginRoute,
   ShopRoute: ShopRoute,

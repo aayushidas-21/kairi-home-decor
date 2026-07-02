@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout } from "@/components/kairi/Layout";
 import brandStory from "@/assets/brand-story.jpg";
 
@@ -61,14 +61,14 @@ function About() {
       <section className="mx-auto max-w-3xl px-6 pb-24 text-center lg:px-10">
         <h2 className="font-serif text-3xl italic text-espresso md:text-4xl">Say hello.</h2>
         <p className="mt-3 text-espresso/70">
-          We answer every email — usually within a day.
+          Have a question or custom request? Get in touch with our studio team.
         </p>
-        <a
-          href="mailto:hello@kairi.in"
-          className="mt-6 inline-block border-b border-clay pb-1 text-clay"
+        <Link
+          to="/contact"
+          className="mt-6 inline-block border-b border-clay pb-1 text-clay hover:text-espresso hover:border-espresso transition-colors"
         >
-          hello@kairi.in
-        </a>
+          Contact Us →
+        </Link>
       </section>
     </Layout>
   );
