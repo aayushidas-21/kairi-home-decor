@@ -11,10 +11,10 @@ import catWall from "@/assets/cat-wall.jpg";
 import catCandles from "@/assets/cat-candles.jpg";
 
 const collectionsData = [
-  { name: "Vases & Ceramics", img: catVases, tagline: "Wheel-thrown stillness for everyday tables." },
-  { name: "Cushions & Throws", img: catCushions, tagline: "Soft layers in linen, wool and slow-washed cotton." },
-  { name: "Wall Decor", img: catWall, tagline: "Texture, shadow and a quiet kind of art." },
-  { name: "Candles & Scents", img: catCandles, tagline: "Hand-poured rituals for slower evenings." },
+  { name: "Vases & Ceramics", img: catVases },
+  { name: "Cushions & Throws", img: catCushions },
+  { name: "Wall Decor", img: catWall },
+  { name: "Candles & Scents", img: catCandles },
 ];
 
 export const Route = createFileRoute("/shop")({
@@ -45,88 +45,81 @@ function Shop() {
     <Layout>
       {/* Hero Header Section */}
       <section className="border-b border-divider bg-parchment/40">
-        <div className="mx-auto max-w-[1400px] px-6 py-16 lg:px-10">
-          <div className="eyebrow text-sage">— Curated Shop</div>
-          <h1 className="mt-3 font-serif text-5xl text-espresso md:text-7xl">
+        <div className="mx-auto max-w-[1400px] px-6 py-12 lg:px-10">
+          <div className="eyebrow text-sage">— The Shop</div>
+          <h1 className="mt-2.5 font-serif text-4xl text-espresso md:text-6xl">
             Everything, <span className="italic">in one place.</span>
           </h1>
-          <p className="mt-4 max-w-xl text-espresso/70">
-            Small-batch pieces from independent makers — explore our visual collections below or filter by category and price.
+          <p className="mt-3 max-w-xl text-espresso/70 text-sm">
+            Small-batch pieces from independent makers — browse categories or filter by price.
           </p>
         </div>
       </section>
 
-      {/* Visual Collections Section */}
-      <section className="mx-auto max-w-[1400px] px-6 py-14 lg:px-10 border-b border-divider">
-        <div className="mb-10">
-          <div className="eyebrow text-clay">— Curated Collections</div>
-          <h2 className="mt-3 font-serif text-3xl text-espresso md:text-4xl">
-            Small worlds, <span className="italic">carefully built.</span>
-          </h2>
-          <p className="mt-3 max-w-xl text-taupe text-sm">
-            Curated around tactile feelings of quietness and slower living. Select any collection to filter the store catalog automatically.
-          </p>
-        </div>
+      {/* Visual Collections - Compact Highlight Circles (Lessen Collections) */}
+      <section className="mx-auto max-w-[1400px] px-6 pt-10 pb-4 lg:px-10">
+        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10">
+          {/* "All" Highlight Circle */}
+          <button
+            onClick={() => setCat("All")}
+            className="group flex flex-col items-center focus:outline-none"
+          >
+            <div className={`h-16 w-16 md:h-20 md:w-20 rounded-full border-2 overflow-hidden flex items-center justify-center bg-linen transition-all duration-300 ${
+              cat === "All" 
+                ? "border-clay ring-4 ring-clay/10 scale-105" 
+                : "border-divider group-hover:border-clay/50"
+            }`}>
+              <span className="font-serif text-xs uppercase tracking-wider text-espresso">All</span>
+            </div>
+            <span className={`mt-2 text-[11px] uppercase tracking-wider transition-colors ${
+              cat === "All" ? "text-clay font-medium" : "text-espresso/70 group-hover:text-espresso"
+            }`}>
+              All
+            </span>
+          </button>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Category Highlight Circles */}
           {collectionsData.map((c) => (
             <button
               key={c.name}
-              onClick={() => {
-                setCat(c.name);
-                // Scroll down smoothly to the store catalog grid
-                const target = document.getElementById("store-catalog");
-                if (target) {
-                  target.scrollIntoView({ behavior: "smooth" });
-                }
-              }}
-              className="group text-left border border-divider rounded-2xl overflow-hidden bg-linen/25 transition-all hover:shadow-md hover:border-clay/40 focus:outline-none"
+              onClick={() => setCat(c.name)}
+              className="group flex flex-col items-center focus:outline-none"
             >
-              <div className="aspect-[4/3] overflow-hidden bg-parchment relative">
+              <div className={`h-16 w-16 md:h-20 md:w-20 rounded-full border-2 overflow-hidden transition-all duration-300 ${
+                cat === c.name 
+                  ? "border-clay ring-4 ring-clay/10 scale-105" 
+                  : "border-divider group-hover:border-clay/50"
+              }`}>
                 <img
                   src={c.img}
                   alt={c.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="h-full w-full object-cover"
                 />
               </div>
-              <div className="p-5">
-                <h3 className="font-serif text-lg text-espresso group-hover:text-clay transition-colors">{c.name}</h3>
-                <p className="mt-2 text-xs text-taupe leading-relaxed font-serif italic">{c.tagline}</p>
-                <span className="mt-4 inline-flex items-center text-[10px] uppercase tracking-wider text-clay border-b border-clay pb-0.5">
-                  Explore & Filter →
-                </span>
-              </div>
-            </button>
+              <span className={`mt-2 text-[11px] uppercase tracking-wider transition-colors ${
+                cat === c.name ? "text-clay font-medium" : "text-espresso/70 group-hover:text-espresso"
+            }`}>
+              {c.name.split(" & ")[0]}
+            </span>
+          </button>
           ))}
         </div>
       </section>
 
-      {/* Interactive Catalog Section */}
-      <section id="store-catalog" className="mx-auto max-w-[1400px] px-6 py-16 lg:px-10 scroll-mt-24">
-        <div className="grid gap-10 md:grid-cols-[220px_1fr]">
-          {/* Sidebar Filters */}
-          <aside className="space-y-8">
-            <div>
-              <h3 className="eyebrow text-taupe">Category</h3>
-              <div className="mt-4 flex flex-wrap gap-2 md:flex-col md:gap-1">
-                {(["All", ...categories.map((c) => c.name)] as const).map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setCat(c)}
-                    className={`rounded-full px-4 py-2 text-left text-sm transition-colors ${
-                      cat === c
-                        ? "bg-clay text-linen font-medium claymorphic-btn"
-                        : "bg-parchment text-espresso/80 hover:text-clay"
-                    }`}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h3 className="eyebrow text-taupe">Max price</h3>
+      {/* Interactive Catalog Section (More of Shop) */}
+      <section id="store-catalog" className="mx-auto max-w-[1400px] px-6 py-6 pb-20 lg:px-10">
+        
+        {/* Top Filter Bar */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 border-y border-divider py-4 mb-10">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-wider text-taupe">Filter:</span>
+            <span className="font-serif italic text-espresso text-sm">{cat} Collection</span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-5 sm:gap-8">
+            {/* Price Slider */}
+            <div className="flex items-center gap-3 min-w-[200px] flex-1 sm:flex-initial">
+              <span className="text-[10px] uppercase tracking-wider text-taupe whitespace-nowrap">Max Price:</span>
               <input
                 type="range"
                 min={500}
@@ -134,27 +127,28 @@ function Shop() {
                 step={100}
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(Number(e.target.value))}
-                className="mt-4 w-full accent-clay"
+                className="w-full accent-clay cursor-pointer h-1.5 rounded-lg appearance-none bg-divider"
               />
-              <div className="mt-2 text-sm text-espresso/70">Up to ₹{maxPrice.toLocaleString("en-IN")}</div>
+              <span className="text-xs font-semibold text-espresso min-w-[50px] text-right">₹{maxPrice}</span>
             </div>
-            <div className="text-xs text-taupe">{filtered.length} pieces found</div>
-          </aside>
 
-          {/* Product Grid */}
-          <div>
-            {filtered.length === 0 ? (
-              <div className="grid h-80 place-items-center rounded-xl bg-parchment/40">
-                <p className="font-serif text-2xl italic text-taupe">Nothing here yet — try a wider filter.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-x-5 gap-y-10 md:grid-cols-3">
-                {filtered.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </div>
-            )}
+            <div className="text-[10px] uppercase tracking-wider text-taupe ml-auto">{filtered.length} pieces</div>
           </div>
+        </div>
+
+        {/* Product Grid - Full Width 4-column layout */}
+        <div>
+          {filtered.length === 0 ? (
+            <div className="grid h-80 place-items-center rounded-xl bg-parchment/40">
+              <p className="font-serif text-2xl italic text-taupe">Nothing here yet — try a wider filter.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-x-5 gap-y-12 sm:grid-cols-3 lg:grid-cols-4">
+              {filtered.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </Layout>
