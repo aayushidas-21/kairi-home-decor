@@ -158,7 +158,7 @@ function LoginComponent() {
                       onClick={() => setView("forgot")}
                       className="text-xs text-clay hover:underline focus:outline-none"
                     >
-                      Forgot?
+                      Forgot password?
                     </button>
                   )}
                 </div>
