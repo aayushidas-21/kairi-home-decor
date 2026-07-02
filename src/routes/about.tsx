@@ -57,19 +57,6 @@ function About() {
           </div>
         ))}
       </section>
-
-      <section className="mx-auto max-w-3xl px-6 pb-24 text-center lg:px-10">
-        <h2 className="font-serif text-3xl italic text-espresso md:text-4xl">Say hello.</h2>
-        <p className="mt-3 text-espresso/70">
-          Have a question or custom request? Get in touch with our studio team.
-        </p>
-        <Link
-          to="/contact"
-          className="mt-6 inline-block border-b border-clay pb-1 text-clay hover:text-espresso hover:border-espresso transition-colors"
-        >
-          Contact Us →
-        </Link>
-      </section>
     </Layout>
   );
 }
