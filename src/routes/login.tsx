@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, deleteUser } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, deleteUser, sendPasswordResetEmail } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginComponent() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [view, setView] = useState<"login" | "register" | "forgot">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -29,12 +29,12 @@ function LoginComponent() {
     setLoading(true);
 
     try {
-      if (isLogin) {
+      if (view === "login") {
         // Sign In
         await signInWithEmailAndPassword(auth, email, password);
         toast.success("Welcome back!");
         navigate({ to: "/" });
-      } else {
+      } else if (view === "register") {
         // Register
         if (fullName.trim().length < 2) {
           toast.error("Please enter your full name.");
@@ -63,6 +63,11 @@ function LoginComponent() {
 
         toast.success("Account created successfully!");
         navigate({ to: "/" });
+      } else if (view === "forgot") {
+        // Forgot Password
+        await sendPasswordResetEmail(auth, email);
+        toast.success("Password reset email sent! Please check your inbox.");
+        setView("login");
       }
     } catch (err: any) {
       console.error(err);
@@ -78,15 +83,19 @@ function LoginComponent() {
         <div className="rounded-2xl border border-divider bg-linen/50 p-8 backdrop-blur-md shadow-sm">
           <div className="mb-8 text-center">
             <h1 className="font-serif text-4xl text-espresso">
-              {isLogin ? "Sign In" : "Create Account"}
+              {view === "login" ? "Sign In" : view === "register" ? "Create Account" : "Reset Password"}
             </h1>
             <p className="mt-2 text-sm text-taupe">
-              {isLogin ? "Welcome back to your intentional space" : "Join the Kairi family"}
+              {view === "login" 
+                ? "Welcome back to your intentional space" 
+                : view === "register" 
+                ? "Join the Kairi family" 
+                : "Enter your email to receive a reset link"}
             </p>
           </div>
 
           <form onSubmit={handleAuth} className="space-y-5">
-            {!isLogin && (
+            {view === "register" && (
               <div className="space-y-1.5">
                 <label className="text-xs uppercase tracking-wider text-espresso/70">Full Name</label>
                 <input
@@ -112,48 +121,69 @@ function LoginComponent() {
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs uppercase tracking-wider text-espresso/70">Password</label>
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full rounded-lg border border-divider bg-linen px-4 py-3 text-sm text-espresso placeholder-taupe/65 outline-none transition-all focus:border-clay focus:ring-1 focus:ring-clay"
-              />
-            </div>
+            {view !== "forgot" && (
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs uppercase tracking-wider text-espresso/70">Password</label>
+                  {view === "login" && (
+                    <button
+                      type="button"
+                      onClick={() => setView("forgot")}
+                      className="text-xs text-clay hover:underline focus:outline-none"
+                    >
+                      Forgot?
+                    </button>
+                  )}
+                </div>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-lg border border-divider bg-linen px-4 py-3 text-sm text-espresso placeholder-taupe/65 outline-none transition-all focus:border-clay focus:ring-1 focus:ring-clay"
+                />
+              </div>
+            )}
 
             <button
               type="submit"
               disabled={loading}
               className="mt-4 w-full rounded-full bg-clay py-3.5 text-xs uppercase tracking-[0.2em] font-medium text-linen transition-colors hover:bg-espresso focus:outline-none disabled:opacity-50"
             >
-              {loading ? "Please wait..." : isLogin ? "Sign In" : "Register"}
+              {loading ? "Please wait..." : view === "login" ? "Sign In" : view === "register" ? "Register" : "Send Reset Link"}
             </button>
           </form>
 
           <div className="mt-8 text-center text-sm text-taupe">
-            {isLogin ? (
+            {view === "login" ? (
               <>
                 Don&apos;t have an account?{" "}
                 <button
-                  onClick={() => setIsLogin(false)}
+                  onClick={() => setView("register")}
                   className="font-medium text-clay hover:underline focus:outline-none"
                 >
                   Create one
                 </button>
               </>
-            ) : (
+            ) : view === "register" ? (
               <>
                 Already have an account?{" "}
                 <button
-                  onClick={() => setIsLogin(true)}
+                  onClick={() => setView("login")}
                   className="font-medium text-clay hover:underline focus:outline-none"
                 >
                   Sign in
                 </button>
               </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setView("login")}
+                className="font-medium text-clay hover:underline focus:outline-none"
+              >
+                Back to Sign In
+              </button>
             )}
           </div>
         </div>
@@ -161,3 +191,4 @@ function LoginComponent() {
     </Layout>
   );
 }
+
