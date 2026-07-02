@@ -43,8 +43,8 @@ function Home() {
     <Layout>
       <Hero />
       <Marquee />
-      <Categories />
       <NewArrivals />
+      <Categories />
       <BrandStory />
       <Bestsellers />
       <Testimonials />
