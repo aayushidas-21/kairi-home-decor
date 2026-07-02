@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
-import { Mail, Clock, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -88,19 +88,6 @@ function ContactPage() {
                 </div>
               </div>
 
-              {/* Business Hours Card */}
-              <div className="flex items-start gap-4 p-6 rounded-2xl border border-divider bg-linen/25">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-espresso/5 text-espresso shrink-0">
-                  <Clock size={18} />
-                </div>
-                <div>
-                  <h3 className="text-xs uppercase tracking-wider text-taupe">Studio Hours</h3>
-                  <p className="mt-1.5 text-espresso font-serif text-lg leading-snug">
-                    Mon — Sat, 10 AM to 6 PM IST
-                  </p>
-                  <p className="mt-1 text-xs text-taupe">Excludes national holidays.</p>
-                </div>
-              </div>
             </div>
           </div>
 
