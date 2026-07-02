@@ -5,10 +5,10 @@ import { useStore } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
 
 const links = [
+  { to: "/", label: "Home" },
   { to: "/shop", label: "Shop" },
   { to: "/collections", label: "Collections" },
   { to: "/about", label: "About" },
-  { to: "/journal", label: "Journal" },
 ] as const;
 
 export function Navbar() {
@@ -63,6 +63,7 @@ export function Navbar() {
             <Link
               key={l.to}
               to={l.to}
+              activeOptions={{ exact: l.to === "/" }}
               className="text-[0.92rem] text-espresso/80 transition-colors hover:text-clay"
               activeProps={{ className: "text-clay" }}
             >
@@ -185,8 +186,10 @@ export function Navbar() {
               <Link
                 key={l.to}
                 to={l.to}
+                activeOptions={{ exact: l.to === "/" }}
                 onClick={() => setOpen(false)}
                 className="py-2.5 text-espresso/85 text-sm uppercase tracking-wider"
+                activeProps={{ className: "text-clay" }}
               >
                 {l.label}
               </Link>
