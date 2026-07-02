@@ -174,6 +174,54 @@ export const products: Product[] = [
       "Hand-rolled using natural dried flower dust and pure essential oils in Mysore. Clean-burning, soothing and charcoal-free.",
     care: "Burn in a well-ventilated space. Keep away from flammable materials and children.",
   },
+  {
+    id: "terracotta-kulhar",
+    name: "Kesar Chai Kulhar (Set of 2)",
+    descriptor: "Earthy clay cups, set of 2",
+    price: 790,
+    image: p6,
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "Clay-molded and sun-baked in Uttar Pradesh. Reusable, rustic cups that hold heat perfectly and add a natural clay aroma to your tea.",
+    care: "Wash gently with warm water, no soap. Air dry thoroughly.",
+  },
+  {
+    id: "jute-cushion-cover",
+    name: "Kavi Jute Cushion",
+    descriptor: "Braided jute and cotton, 16×16",
+    price: 1190,
+    image: p2,
+    category: "Cushions & Throws",
+    bestseller: true,
+    story:
+      "Interwoven golden jute fibers and thick cream cotton, handcrafted by weavers in West Bengal.",
+    care: "Spot clean or dry clean only. Do not wash.",
+  },
+  {
+    id: "terracotta-wall-plates",
+    name: "Mural Clay Plates (Set of 3)",
+    descriptor: "Hand-painted terracotta plates",
+    price: 2190,
+    image: p3,
+    category: "Wall Decor",
+    isNew: true,
+    story:
+      "A set of three hand-painted wall plates featuring abstract botanical lines, created by folk artists in Bihar.",
+    care: "Dust with a dry cloth. Ready to hang.",
+  },
+  {
+    id: "vetiver-mist",
+    name: "Khus Root Mist",
+    descriptor: "Pure vetiver root water, 100ml",
+    price: 1390,
+    image: p4,
+    category: "Candles & Scents",
+    isNew: true,
+    story:
+      "Steam-distilled from wild vetiver (Khus) roots in Kannauj. A cooling, earthy aroma mist for linens and spaces.",
+    care: "Store in a cool, dark place. Spray from a distance of 10 inches.",
+  },
 ];
 
 export const categories = [
