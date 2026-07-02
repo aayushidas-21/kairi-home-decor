@@ -6,6 +6,14 @@ import p5 from "@/assets/p5.jpg";
 import p6 from "@/assets/p6.jpg";
 import p7 from "@/assets/p7.jpg";
 import p8 from "@/assets/p8.jpg";
+import p9 from "@/assets/p9.jpg";
+import p10 from "@/assets/p10.jpg";
+import p11 from "@/assets/p11.jpg";
+import p12 from "@/assets/p12.jpg";
+import p13 from "@/assets/p13.jpg";
+import p14 from "@/assets/p14.jpg";
+import p15 from "@/assets/p15.jpg";
+import p16 from "@/assets/p16.jpg";
 
 export type Product = {
   id: string;
@@ -128,7 +136,7 @@ export const products: Product[] = [
     name: "Neel Indigo Cup",
     descriptor: "Studio pottery, indigo glaze",
     price: 890,
-    image: p1,
+    image: p9,
     category: "Vases & Ceramics",
     colors: ["#2C2420", "#EDE2D2"],
     isNew: true,
@@ -141,7 +149,7 @@ export const products: Product[] = [
     name: "Kaya Wool Blanket",
     descriptor: "Fleece wool blend, natural fringe",
     price: 2890,
-    image: p8,
+    image: p10,
     category: "Cushions & Throws",
     colors: ["#EDE2D2", "#B5845A"],
     bestseller: true,
@@ -154,7 +162,7 @@ export const products: Product[] = [
     name: "Tara Brass Hanging",
     descriptor: "Hand-beaten recycled brass",
     price: 1590,
-    image: p5,
+    image: p11,
     category: "Wall Decor",
     isNew: true,
     story:
@@ -166,7 +174,7 @@ export const products: Product[] = [
     name: "Mogra Incense Cones",
     descriptor: "Jasmine & Mogra, 30 cones",
     price: 490,
-    image: p4,
+    image: p12,
     category: "Candles & Scents",
     isNew: true,
     bestseller: true,
@@ -179,7 +187,7 @@ export const products: Product[] = [
     name: "Kesar Chai Kulhar (Set of 2)",
     descriptor: "Earthy clay cups, set of 2",
     price: 790,
-    image: p6,
+    image: p13,
     category: "Vases & Ceramics",
     isNew: true,
     story:
@@ -191,7 +199,7 @@ export const products: Product[] = [
     name: "Kavi Jute Cushion",
     descriptor: "Braided jute and cotton, 16×16",
     price: 1190,
-    image: p2,
+    image: p14,
     category: "Cushions & Throws",
     bestseller: true,
     story:
@@ -203,7 +211,7 @@ export const products: Product[] = [
     name: "Mural Clay Plates (Set of 3)",
     descriptor: "Hand-painted terracotta plates",
     price: 2190,
-    image: p3,
+    image: p15,
     category: "Wall Decor",
     isNew: true,
     story:
@@ -215,7 +223,7 @@ export const products: Product[] = [
     name: "Khus Root Mist",
     descriptor: "Pure vetiver root water, 100ml",
     price: 1390,
-    image: p4,
+    image: p16,
     category: "Candles & Scents",
     isNew: true,
     story:
