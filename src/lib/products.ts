@@ -123,6 +123,57 @@ export const products: Product[] = [
       "Woven on traditional handlooms in Panipat with soft mercerised cotton and a generous fringed edge.",
     care: "Machine wash cold, line dry. Iron on low if needed.",
   },
+  {
+    id: "ceramic-indigo-cup",
+    name: "Neel Indigo Cup",
+    descriptor: "Studio pottery, indigo glaze",
+    price: 890,
+    image: p1,
+    category: "Vases & Ceramics",
+    colors: ["#2C2420", "#EDE2D2"],
+    isNew: true,
+    story:
+      "Individually glazed and fired in a wood-fired kiln in Pondicherry, giving it a deep, unique indigo texture and earthy feel.",
+    care: "Dishwasher safe. Handle with care.",
+  },
+  {
+    id: "wool-throw-beige",
+    name: "Kaya Wool Blanket",
+    descriptor: "Fleece wool blend, natural fringe",
+    price: 2890,
+    image: p8,
+    category: "Cushions & Throws",
+    colors: ["#EDE2D2", "#B5845A"],
+    bestseller: true,
+    story:
+      "A heavy, comforting blend of organic sheep's wool and natural cotton, handloom-woven by traditional artisans in Himachal Pradesh.",
+    care: "Dry clean only. Gentle spot clean with mild detergent.",
+  },
+  {
+    id: "brass-wall-hanging",
+    name: "Tara Brass Hanging",
+    descriptor: "Hand-beaten recycled brass",
+    price: 1590,
+    image: p5,
+    category: "Wall Decor",
+    isNew: true,
+    story:
+      "Delicate geometric shapes beaten by hand from recycled brass sheets by master metalsmiths in Jaipur.",
+    care: "Dust with a dry microfibre cloth. Avoid dampness.",
+  },
+  {
+    id: "mogra-incense",
+    name: "Mogra Incense Cones",
+    descriptor: "Jasmine & Mogra, 30 cones",
+    price: 490,
+    image: p4,
+    category: "Candles & Scents",
+    isNew: true,
+    bestseller: true,
+    story:
+      "Hand-rolled using natural dried flower dust and pure essential oils in Mysore. Clean-burning, soothing and charcoal-free.",
+    care: "Burn in a well-ventilated space. Keep away from flammable materials and children.",
+  },
 ];
 
 export const categories = [
