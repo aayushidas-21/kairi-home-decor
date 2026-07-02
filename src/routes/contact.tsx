@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Layout } from "@/components/kairi/Layout";
-import { Mail, MapPin, Clock, ArrowRight } from "lucide-react";
+import { Mail, Clock, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -85,20 +85,6 @@ function ContactPage() {
                     hello@kairi.in
                   </a>
                   <p className="mt-1 text-xs text-taupe">We usually reply within 24 hours.</p>
-                </div>
-              </div>
-
-              {/* Location Card */}
-              <div className="flex items-start gap-4 p-6 rounded-2xl border border-divider bg-linen/25">
-                <div className="grid h-10 w-10 place-items-center rounded-full bg-sage/15 text-sage shrink-0">
-                  <MapPin size={18} />
-                </div>
-                <div>
-                  <h3 className="text-xs uppercase tracking-wider text-taupe">Our Studio</h3>
-                  <p className="mt-1.5 text-espresso font-serif text-lg leading-snug">
-                    Siliguri, West Bengal, India
-                  </p>
-                  <p className="mt-1 text-xs text-taupe">Visits by prior appointment only.</p>
                 </div>
               </div>
 
