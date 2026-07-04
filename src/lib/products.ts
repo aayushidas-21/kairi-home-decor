@@ -23,6 +23,12 @@ import p22 from "@/assets/p22.jpg";
 import p23 from "@/assets/p23.jpg";
 import p24 from "@/assets/p24.jpg";
 import p25 from "@/assets/p25.jpg";
+import vaseTerracotta from "@/assets/vase_terracotta.jpg";
+import vaseCharcoal from "@/assets/vase_charcoal.jpg";
+import cushionSage from "@/assets/cushion_sage.jpg";
+import cushionTerracotta from "@/assets/cushion_terracotta.jpg";
+import cupCream from "@/assets/cup_cream.jpg";
+import blanketCamel from "@/assets/blanket_camel.jpg";
 
 export type Product = {
   id: string;
@@ -33,6 +39,7 @@ export type Product = {
   images?: string[];
   category: "Vases & Ceramics" | "Cushions & Throws" | "Wall Decor" | "Candles & Scents";
   colors?: string[];
+  colorImages?: Record<string, string>;
   bestseller?: boolean;
   isNew?: boolean;
   story: string;
@@ -48,6 +55,11 @@ export const products: Product[] = [
     image: p1,
     category: "Vases & Ceramics",
     colors: ["#EDE2D2", "#B5845A", "#2C2420"],
+    colorImages: {
+      "#EDE2D2": p1,
+      "#B5845A": vaseTerracotta,
+      "#2C2420": vaseCharcoal,
+    },
     isNew: true,
     bestseller: true,
     story:
@@ -62,6 +74,11 @@ export const products: Product[] = [
     image: p2,
     category: "Cushions & Throws",
     colors: ["#EDE2D2", "#7A8C6E", "#B5845A"],
+    colorImages: {
+      "#EDE2D2": p2,
+      "#7A8C6E": cushionSage,
+      "#B5845A": cushionTerracotta,
+    },
     isNew: true,
     story:
       "Woven from European flax linen and softened with a slow stonewash for a lived-in drape from day one.",
@@ -148,6 +165,10 @@ export const products: Product[] = [
     image: p9,
     category: "Vases & Ceramics",
     colors: ["#2C2420", "#EDE2D2"],
+    colorImages: {
+      "#2C2420": p9,
+      "#EDE2D2": cupCream,
+    },
     isNew: true,
     story:
       "Individually glazed and fired in a wood-fired kiln in Pondicherry, giving it a deep, unique indigo texture and earthy feel.",
@@ -161,6 +182,10 @@ export const products: Product[] = [
     image: p10,
     category: "Cushions & Throws",
     colors: ["#EDE2D2", "#B5845A"],
+    colorImages: {
+      "#EDE2D2": p10,
+      "#B5845A": blanketCamel,
+    },
     bestseller: true,
     story:
       "A heavy, comforting blend of organic sheep's wool and natural cotton, handloom-woven by traditional artisans in Himachal Pradesh.",

@@ -7,18 +7,20 @@ import { useStore, formatINR } from "@/lib/store";
 export function QuickViewModal() {
   const { quickViewId, setQuickViewId, products, addToCart, toggleWishlist, wishlist, setCartOpen } = useStore();
   const [qty, setQty] = useState(1);
-
-  // Reset qty on product change
-  useEffect(() => {
-    setQty(1);
-  }, [quickViewId]);
-
-  if (!quickViewId) return null;
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
 
   const product = products.find((p) => p.id === quickViewId);
-  if (!product) return null;
+
+  // Reset states on product change
+  useEffect(() => {
+    setQty(1);
+    setSelectedColor(product?.colors?.[0]);
+  }, [quickViewId, product]);
+
+  if (!quickViewId || !product) return null;
 
   const liked = wishlist.includes(product.id);
+  const currentImage = (selectedColor && product.colorImages?.[selectedColor]) || product.image;
 
   const handleClose = () => {
     setQuickViewId(null);
@@ -54,9 +56,9 @@ export function QuickViewModal() {
           {/* Product Image Panel */}
           <div className="relative aspect-[4/5] bg-parchment md:aspect-auto md:h-[520px]">
             <img 
-              src={product.image} 
+              src={currentImage} 
               alt={product.name} 
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover transition-all duration-500 ease-out"
             />
             {product.isNew && (
               <span className="absolute left-6 top-6 rounded-full bg-sage px-3 py-1 text-[9px] uppercase tracking-wider text-linen font-medium shadow-warm-sm">
@@ -86,6 +88,24 @@ export function QuickViewModal() {
                 <div className="mt-4">
                   <span className="text-[10px] uppercase tracking-wider text-taupe block mb-1">Care & Handling</span>
                   <p className="text-xs text-taupe/90 italic">{product.care}</p>
+                </div>
+              )}
+
+              {product.colors && (
+                <div className="mt-4">
+                  <span className="text-[10px] uppercase tracking-wider text-taupe block mb-1.5">Tone</span>
+                  <div className="flex gap-2">
+                    {product.colors.map((c: string) => (
+                      <button
+                        key={c}
+                        onClick={() => setSelectedColor(c)}
+                        style={{ background: c }}
+                        className={`h-6 w-6 rounded-full border transition-all ${
+                          selectedColor === c ? "border-espresso scale-110 ring-1 ring-espresso" : "border-divider"
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

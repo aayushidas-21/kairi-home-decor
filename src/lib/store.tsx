@@ -64,7 +64,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
         querySnapshot.forEach((d) => {
           const data = d.data() as Product;
-          list.push(data);
+          const staticMatch = staticProducts.find((p) => p.id === data.id);
+          list.push({
+            ...staticMatch,
+            ...data,
+            colorImages: data.colorImages || staticMatch?.colorImages,
+            colors: data.colors || staticMatch?.colors
+          });
           firestoreProductIds.add(data.id);
         });
 
@@ -82,6 +88,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               story: p.story,
               care: p.care,
               colors: p.colors || null,
+              colorImages: p.colorImages || null,
               isNew: p.isNew || false,
               bestseller: p.bestseller || false
             });

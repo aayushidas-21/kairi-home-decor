@@ -71,13 +71,11 @@ function PDP() {
       <section className="mx-auto grid max-w-[1400px] gap-12 px-6 py-10 md:grid-cols-2 md:gap-16 lg:px-10">
         <div>
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-parchment">
-            <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
-            {color && (
-              <div
-                className="absolute inset-0 pointer-events-none mix-blend-multiply opacity-20 transition-all duration-300"
-                style={{ backgroundColor: color }}
-              />
-            )}
+            <img 
+              src={(color && product.colorImages?.[color]) || product.image} 
+              alt={product.name} 
+              className="h-full w-full object-cover transition-all duration-500 ease-out" 
+            />
           </div>
           <div className="mt-4 grid grid-cols-4 gap-3">
             {(product.images ?? [product.image]).map((src, i) => (
