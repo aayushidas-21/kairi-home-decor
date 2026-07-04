@@ -44,6 +44,7 @@ export type Product = {
   isNew?: boolean;
   story: string;
   care: string;
+  stock?: number;
 };
 
 export const products: Product[] = [

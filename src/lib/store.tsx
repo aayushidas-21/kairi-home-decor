@@ -69,7 +69,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             ...staticMatch,
             ...data,
             colorImages: data.colorImages || staticMatch?.colorImages,
-            colors: data.colors || staticMatch?.colors
+            colors: data.colors || staticMatch?.colors,
+            stock: data.stock !== undefined ? data.stock : 50
           });
           firestoreProductIds.add(data.id);
         });
@@ -90,7 +91,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               colors: p.colors || null,
               colorImages: p.colorImages || null,
               isNew: p.isNew || false,
-              bestseller: p.bestseller || false
+              bestseller: p.bestseller || false,
+              stock: p.stock !== undefined ? p.stock : 50
             });
             list.push(p);
           }
