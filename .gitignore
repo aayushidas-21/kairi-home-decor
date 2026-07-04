@@ -93,3 +93,6 @@ desktop.ini
 coverage/
 .nyc_output/
 .playwright/
+
+# Archives & Large Zips
+*.zip
