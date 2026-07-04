@@ -349,6 +349,18 @@ export const products: Product[] = [
       "A nesting trio of small ceramic bowls in soft Danish pastel tones (mint, lavender, peach). Features clean organic shapes with a satin-matte glazed finish.",
     care: "Dishwasher and microwave safe.",
   },
+  {
+    id: "elephant-structure-showpiece",
+    name: "Elephant Structure Showpiece",
+    descriptor: "Minimalist Elephant Structure Home Decor",
+    price: 2050,
+    image: "/assets/elephant-showpiece.jpeg",
+    category: "Vases & Ceramics",
+    isNew: true,
+    story:
+      "Features a compact, rounded elephant body shape overall, rendered in a minimalist, smooth form that captures the animal shape.",
+    care: "Avoid direct sunlight and harsh chemicals.",
+  },
 ];
 
 export const categories = [
