@@ -39,6 +39,67 @@ type AdminUser = {
   createdAt: string;
 };
 
+// 3D Tilt KPI Card Component
+function KPI3DCard({ 
+  title, 
+  value, 
+  icon: Icon, 
+  bgIcon: BgIcon, 
+  iconColorClass 
+}: { 
+  title: string; 
+  value: string | number; 
+  icon: any; 
+  bgIcon: any; 
+  iconColorClass: string; 
+}) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((centerY - y) / centerY) * 12;
+    const rotateY = ((x - centerX) / centerX) * 12;
+    setTilt({ x: rotateX, y: rotateY });
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+    setTilt({ x: 0, y: 0 });
+  };
+
+  return (
+    <div 
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{ 
+        transform: hovered 
+          ? `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(-6px)` 
+          : "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)",
+        transition: hovered ? "transform 0.05s ease-out, shadow 0.3s" : "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), shadow 0.3s"
+      }}
+      className="relative overflow-hidden rounded-2xl border border-divider bg-white/45 backdrop-blur-md p-6 flex items-center gap-5 shadow-warm-sm transition-shadow duration-300 hover:shadow-warm-md cursor-default group"
+    >
+      <div className={`grid h-12 w-12 place-items-center rounded-full transition-all duration-300 ${iconColorClass}`}>
+        <Icon size={20} />
+      </div>
+      <div className="z-10">
+        <p className="text-xs uppercase tracking-wider text-taupe font-medium">{title}</p>
+        <p className="mt-1 font-serif text-3xl font-semibold text-espresso">{value}</p>
+      </div>
+      <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-5 text-espresso pointer-events-none group-hover:scale-110 transition-transform duration-500">
+        <BgIcon size={120} />
+      </div>
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const { user, role, loading, logout } = useAuth();
   const { products } = useStore();
@@ -271,46 +332,29 @@ function AdminDashboard() {
           </button>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid gap-6 sm:grid-cols-3 mb-10">
-          <div className="relative overflow-hidden rounded-2xl border border-divider bg-linen/25 p-6 flex items-center gap-5 transition-all hover:scale-[1.02] hover:bg-linen/40 hover:shadow-warm-sm group">
-            <div className="grid h-12 w-12 place-items-center rounded-full bg-clay/10 text-clay group-hover:bg-clay group-hover:text-linen transition-all duration-300">
-              <ShoppingBag size={20} />
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-wider text-taupe">Total Orders</p>
-              <p className="mt-1 font-serif text-3xl font-semibold text-espresso">{totalOrders}</p>
-            </div>
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-5 text-espresso">
-              <ShoppingBag size={120} />
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-2xl border border-divider bg-linen/25 p-6 flex items-center gap-5 transition-all hover:scale-[1.02] hover:bg-linen/40 hover:shadow-warm-sm group">
-            <div className="grid h-12 w-12 place-items-center rounded-full bg-sage/15 text-sage group-hover:bg-sage group-hover:text-linen transition-all duration-300">
-              <IndianRupee size={20} />
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-wider text-taupe">Total Revenue</p>
-              <p className="mt-1 font-serif text-3xl font-semibold text-espresso">{formatINR(totalRevenue)}</p>
-            </div>
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-5 text-espresso">
-              <IndianRupee size={120} />
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden rounded-2xl border border-divider bg-linen/25 p-6 flex items-center gap-5 transition-all hover:scale-[1.02] hover:bg-linen/40 hover:shadow-warm-sm group">
-            <div className="grid h-12 w-12 place-items-center rounded-full bg-espresso/5 text-espresso group-hover:bg-espresso group-hover:text-linen transition-all duration-300">
-              <Users size={20} />
-            </div>
-            <div>
-              <p className="text-xs uppercase tracking-wider text-taupe">Customers</p>
-              <p className="mt-1 font-serif text-3xl font-semibold text-espresso">{totalRegisteredUsers}</p>
-            </div>
-            <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-5 text-espresso">
-              <Users size={120} />
-            </div>
-          </div>
+        {/* 3D Interactive Stats Grid */}
+        <div className="grid gap-6 sm:grid-cols-3 mb-12">
+          <KPI3DCard 
+            title="Total Orders" 
+            value={totalOrders} 
+            icon={ShoppingBag} 
+            bgIcon={ShoppingBag} 
+            iconColorClass="bg-clay/10 text-clay group-hover:bg-clay group-hover:text-linen" 
+          />
+          <KPI3DCard 
+            title="Total Revenue" 
+            value={formatINR(totalRevenue)} 
+            icon={IndianRupee} 
+            bgIcon={IndianRupee} 
+            iconColorClass="bg-sage/15 text-sage group-hover:bg-sage group-hover:text-linen" 
+          />
+          <KPI3DCard 
+            title="Customers" 
+            value={totalRegisteredUsers} 
+            icon={Users} 
+            bgIcon={Users} 
+            iconColorClass="bg-espresso/5 text-espresso group-hover:bg-espresso group-hover:text-linen" 
+          />
         </div>
 
         {/* Tab Switcher - Styled Navigation */}
@@ -661,11 +705,11 @@ function AdminDashboard() {
                       const stockVal = p.stock !== undefined ? p.stock : 50;
                       return (
                         <tr key={p.id} className="hover:bg-linen/15 transition-all duration-200">
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4 overflow-hidden">
                             <img 
                               src={p.image} 
                               alt="" 
-                              className="h-14 w-11 rounded-md object-cover border border-divider shadow-warm-sm bg-linen"
+                              className="h-14 w-11 rounded-md object-cover border border-divider shadow-warm-sm bg-linen hover:scale-125 hover:rotate-3 transition-transform duration-300 cursor-zoom-in"
                             />
                           </td>
                           <td className="px-6 py-4 font-mono text-xs text-taupe">{p.id}</td>
