@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { adminDb } from "@/lib/firebase-admin";
 import { z } from "zod";
 
 if (typeof window !== "undefined") {
@@ -31,6 +30,7 @@ const orderInputSchema = z.object({
 export const createOrder = createServerFn({ method: "POST" })
   .validator((data: unknown) => orderInputSchema.parse(data))
   .handler(async ({ data }) => {
+    const { adminDb } = await import("@/lib/firebase-admin");
     if (!adminDb) {
       throw new Error("Firebase Admin Database is not initialized.");
     }
