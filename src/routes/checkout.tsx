@@ -7,8 +7,7 @@ import { Layout } from "@/components/kairi/Layout";
 
 import { useStore, formatINR } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
-import { doc, setDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { createOrder } from "../lib/order.server";
 
 
 export const Route = createFileRoute("/checkout")({
@@ -147,58 +146,53 @@ function Checkout() {
     }
 
     setSubmitting(true);
-    const orderNumber = `KAI-${Date.now().toString(36).toUpperCase()}`;
     try {
-      // Save order to Firestore
-      await setDoc(doc(db, "orders", orderNumber), {
-        orderNumber,
-        userId: user?.uid || null,
-        email: form.email,
-        name: form.fullName,
-        phone: form.phone,
-        shippingAddress: {
-          address1: form.address1,
-          address2: form.address2,
-          city: form.city,
-          state: form.state,
-          pincode: form.pincode,
-          country: form.country,
-        },
-        items: items.map((item) => ({
-          id: item.id,
-          name: item.product?.name || "Unknown Item",
-          price: item.product?.price || 0,
-          qty: item.qty,
-        })),
-        total,
-        itemCount: items.reduce((s, i) => s + i.qty, 0),
-        payMethod: form.payMethod,
-        createdAt: new Date().toISOString(),
-        status: "processing",
+      // Call server function to compute and write the order securely
+      const res = await createOrder({
+        data: {
+          userId: user?.uid || null,
+          email: form.email,
+          name: form.fullName,
+          phone: form.phone,
+          shippingAddress: {
+            address1: form.address1,
+            address2: form.address2 || "",
+            city: form.city,
+            state: form.state,
+            pincode: form.pincode,
+            country: form.country,
+          },
+          items: items.map((item) => ({
+            id: item.id,
+            qty: item.qty,
+          })),
+          payMethod: form.payMethod,
+        }
       });
 
       sessionStorage.setItem(
         "kairi.lastOrder",
         JSON.stringify({
-          orderNumber,
+          orderNumber: res.orderNumber,
           email: form.email,
           name: form.fullName,
-          total,
-          itemCount: items.reduce((s, i) => s + i.qty, 0),
+          total: res.total,
+          itemCount: res.itemCount,
           payMethod: form.payMethod,
           createdAt: new Date().toISOString(),
         }),
       );
       localStorage.removeItem("kairi.cart");
+
+      setTimeout(() => {
+        navigate({ to: "/order/$id", params: { id: res.orderNumber } });
+      }, 700);
     } catch (err) {
-      console.error("Failed to save order to Firestore:", err);
+      console.error("Failed to save order:", err);
       toast.error("Failed to process order. Please try again.");
       setSubmitting(false);
       return;
     }
-    setTimeout(() => {
-      navigate({ to: "/order/$id", params: { id: orderNumber } });
-    }, 700);
   };
 
   return (

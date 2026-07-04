@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper to check if requesting user is an admin
+    function isAdmin() {
+      return request.auth != null && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Users: Profile read/write restricted to owner or admin. Role can never be set/changed by client unless already admin.
+    match /users/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isAdmin());
+      allow create: if request.auth != null && request.auth.uid == uid && (request.resource.data.role == 'user' || isAdmin());
+      allow update: if request.auth != null && request.auth.uid == uid && (!('role' in request.resource.data) || request.resource.data.role == resource.data.role || isAdmin());
+      allow delete: if isAdmin();
+    }
+
+    // Orders: Creatable by matching authenticated user or guest (null userId) with strict schema validation. Readable only by owner or admin.
+    match /orders/{orderId} {
+      allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if (
+        (request.auth != null && request.auth.uid == request.resource.data.userId) || 
+        (request.resource.data.userId == null)
+      ) && 
+      request.resource.data.orderNumber is string &&
+      request.resource.data.email is string &&
+      request.resource.data.name is string &&
+      request.resource.data.phone is string &&
+      request.resource.data.shippingAddress is map &&
+      request.resource.data.items is list &&
+      request.resource.data.total is number &&
+      request.resource.data.itemCount is number &&
+      request.resource.data.payMethod is string &&
+      request.resource.data.createdAt is string &&
+      request.resource.data.status is string;
+      
+      allow update, delete: if isAdmin();
+    }
+
+    // Products: Read is public, write is restricted to admins
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Categories: Read is public, write is restricted to admins
+    match /categories/{categorySlug} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

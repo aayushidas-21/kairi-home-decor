@@ -26,9 +26,8 @@ function getFriendlyErrorMessage(err: any): string {
       return "This email is already registered. Please sign in instead.";
     case "auth/invalid-credential":
     case "auth/wrong-password":
-      return "Incorrect email or password. Please try again.";
     case "auth/user-not-found":
-      return "No account found with this email. Please register first.";
+      return "Incorrect email or password.";
     case "auth/weak-password":
       return "Password is too weak. It must be at least 6 characters long.";
     case "auth/invalid-email":
