@@ -1,10 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-if (typeof window !== "undefined") {
-  throw new Error("firebase-admin cannot be imported on the client side.");
-}
-
 const orderInputSchema = z.object({
   userId: z.string().nullable(),
   email: z.string().trim().email(),
