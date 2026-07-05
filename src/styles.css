@@ -175,3 +175,19 @@
     color: var(--linen);
   }
 }
+
+/* Sonner 3D Apple/Vercel-level Glassmorphic Toast style */
+.sonner-3d-toast {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transform: translate3d(0, 0, 0) scale(1) !important;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s !important;
+}
+
+.sonner-3d-toast:hover {
+  transform: translate3d(0, -6px, 16px) rotateX(3deg) rotateY(-3deg) !important;
+  box-shadow: 
+    0 30px 60px -15px rgba(44, 36, 32, 0.22), 
+    0 0 0 1.5px var(--clay) inset, 
+    0 12px 24px -10px rgba(181, 132, 90, 0.15) !important;
+}

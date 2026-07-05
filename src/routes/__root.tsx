@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "../lib/store";
 import { AuthProvider } from "../lib/auth";
 import { Toaster } from "sonner";
+import { AudioTriggers } from "../components/kairi/AudioTriggers";
 
 
 function NotFoundComponent() {
@@ -133,20 +134,23 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <StoreProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
           <Outlet />
           <Toaster
             position="bottom-right"
             toastOptions={{
+              className: "sonner-3d-toast",
               style: {
-                background: "var(--linen)",
+                background: "rgba(253, 251, 247, 0.85)",
+                backdropFilter: "blur(18px) saturate(110%)",
                 color: "var(--espresso)",
-                border: "1px solid var(--divider)",
-                borderRadius: "12px",
+                border: "1px solid rgba(44, 36, 32, 0.08)",
+                borderRadius: "16px",
                 fontFamily: "var(--font-sans)",
+                boxShadow: "0 25px 50px -12px rgba(44, 36, 32, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.65) inset",
               },
             }}
           />
+          <AudioTriggers />
         </StoreProvider>
       </AuthProvider>
     </QueryClientProvider>
