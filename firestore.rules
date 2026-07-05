@@ -20,10 +20,7 @@ service cloud.firestore {
     // Orders: Creatable by matching authenticated user or guest (null userId) with strict schema validation. Readable only by owner or admin.
     match /orders/{orderId} {
       allow read: if request.auth != null && (request.auth.uid == resource.data.userId || isAdmin());
-      allow create: if (
-        (request.auth != null && request.auth.uid == request.resource.data.userId) || 
-        (request.resource.data.userId == null)
-      ) && 
+      allow create: if 
       request.resource.data.orderNumber is string &&
       request.resource.data.email is string &&
       request.resource.data.name is string &&
