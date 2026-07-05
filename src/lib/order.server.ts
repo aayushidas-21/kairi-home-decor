@@ -26,33 +26,64 @@ const orderInputSchema = z.object({
 export const createOrder = createServerFn({ method: "POST" })
   .validator((data: unknown) => orderInputSchema.parse(data))
   .handler(async ({ data }) => {
-    const { adminDb } = await import("@/lib/firebase-admin");
-    if (!adminDb) {
-      throw new Error("Firebase Admin Database is not initialized.");
+    let adminDbInstance = null;
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin");
+      adminDbInstance = adminDb;
+    } catch (e) {
+      console.warn("Firebase Admin SDK is not available, falling back to Client SDK:", e);
     }
 
     // 1. Recalculate prices and totals from Firestore (trusted source)
     let subtotal = 0;
     const recomputedItems = [];
 
-    for (const item of data.items) {
-      const prodDoc = await adminDb.collection("products").doc(item.id).get();
-      if (!prodDoc.exists) {
-        throw new Error(`Product not found: ${item.id}`);
-      }
-      const prodData = prodDoc.data();
-      if (!prodData) {
-        throw new Error(`Empty product details: ${item.id}`);
-      }
-      const price = Number(prodData.price) || 0;
-      subtotal += price * item.qty;
+    if (adminDbInstance) {
+      // Use Admin SDK
+      for (const item of data.items) {
+        const prodDoc = await adminDbInstance.collection("products").doc(item.id).get();
+        if (!prodDoc.exists) {
+          throw new Error(`Product not found: ${item.id}`);
+        }
+        const prodData = prodDoc.data();
+        if (!prodData) {
+          throw new Error(`Empty product details: ${item.id}`);
+        }
+        const price = Number(prodData.price) || 0;
+        subtotal += price * item.qty;
 
-      recomputedItems.push({
-        id: item.id,
-        name: prodData.name || "Unknown Item",
-        price: price,
-        qty: item.qty,
-      });
+        recomputedItems.push({
+          id: item.id,
+          name: prodData.name || "Unknown Item",
+          price: price,
+          qty: item.qty,
+        });
+      }
+    } else {
+      // Use Client SDK Fallback (useful when Admin env vars are not set on Vercel)
+      const { db } = await import("@/lib/firebase");
+      const { doc, getDoc } = await import("firebase/firestore");
+
+      for (const item of data.items) {
+        const prodDocRef = doc(db, "products", item.id);
+        const prodDoc = await getDoc(prodDocRef);
+        if (!prodDoc.exists()) {
+          throw new Error(`Product not found: ${item.id}`);
+        }
+        const prodData = prodDoc.data();
+        if (!prodData) {
+          throw new Error(`Empty product details: ${item.id}`);
+        }
+        const price = Number(prodData.price) || 0;
+        subtotal += price * item.qty;
+
+        recomputedItems.push({
+          id: item.id,
+          name: prodData.name || "Unknown Item",
+          price: price,
+          qty: item.qty,
+        });
+      }
     }
 
     const shipping = subtotal === 0 ? 0 : subtotal >= 999 ? 0 : 99;
@@ -62,8 +93,8 @@ export const createOrder = createServerFn({ method: "POST" })
     // 2. Generate same order number format
     const orderNumber = `KAI-${Date.now().toString(36).toUpperCase()}`;
 
-    // 3. Write order document to Firestore via Admin SDK (bypasses rules)
-    await adminDb.collection("orders").doc(orderNumber).set({
+    // 3. Write order document to Firestore
+    const orderData = {
       orderNumber,
       userId: data.userId,
       email: data.email,
@@ -76,7 +107,15 @@ export const createOrder = createServerFn({ method: "POST" })
       payMethod: data.payMethod,
       createdAt: new Date().toISOString(),
       status: "processing",
-    });
+    };
+
+    if (adminDbInstance) {
+      await adminDbInstance.collection("orders").doc(orderNumber).set(orderData);
+    } else {
+      const { db } = await import("@/lib/firebase");
+      const { doc, setDoc } = await import("firebase/firestore");
+      await setDoc(doc(db, "orders", orderNumber), orderData);
+    }
 
     return {
       orderNumber,
