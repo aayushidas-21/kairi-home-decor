@@ -15,6 +15,7 @@ import { useAuth } from "@/lib/auth";
 import { db, storage } from "@/lib/firebase";
 import { useStore, formatINR } from "@/lib/store";
 import { toast } from "sonner";
+import { updateOrderStatus } from "../lib/order.server";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -165,8 +166,12 @@ function AdminDashboard() {
   // Order Status Update Handler
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const orderRef = doc(db, "orders", orderId);
-      await setDoc(orderRef, { status: newStatus }, { merge: true });
+      await updateOrderStatus({
+        data: {
+          orderId,
+          status: newStatus,
+        }
+      });
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
       toast.success(`Order status updated to ${newStatus} ✦`);
     } catch (err) {

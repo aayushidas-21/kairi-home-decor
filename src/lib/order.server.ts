@@ -123,3 +123,34 @@ export const createOrder = createServerFn({ method: "POST" })
       itemCount,
     };
   });
+
+export const updateOrderStatus = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      orderId: z.string(),
+      status: z.string(),
+    })
+  )
+  .handler(async ({ data }) => {
+    let adminDbInstance = null;
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin");
+      adminDbInstance = adminDb;
+    } catch (e) {
+      console.warn("Firebase Admin SDK is not available, falling back to Client SDK:", e);
+    }
+
+    if (adminDbInstance) {
+      await adminDbInstance.collection("orders").doc(data.orderId).update({
+        status: data.status,
+      });
+    } else {
+      const { db } = await import("@/lib/firebase");
+      const { doc, updateDoc } = await import("firebase/firestore");
+      await updateDoc(doc(db, "orders", data.orderId), {
+        status: data.status,
+      });
+    }
+
+    return { success: true };
+  });
