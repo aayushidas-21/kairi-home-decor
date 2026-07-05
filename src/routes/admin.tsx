@@ -306,7 +306,6 @@ function AdminDashboard() {
   // Calculations for KPIs
   const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
   const totalOrders = orders.length;
-  const totalRegisteredUsers = users.length;
   
   // Active catalog products
   const activeCatalogCount = products.length;
