@@ -145,9 +145,13 @@ function PDP() {
               toggleWishlist(product.id);
               toast(liked ? "Removed from wishlist" : "Saved to wishlist ✦");
             }}
-            className="mt-4 inline-flex items-center gap-2 text-sm text-espresso/80 underline-offset-4 hover:text-clay hover:underline"
+            className="mt-4 inline-flex items-center gap-2 text-sm text-espresso/80 transition-colors hover:text-clay"
           >
-            <Heart size={14} className={liked ? "fill-clay text-clay" : ""} /> Add to wishlist
+            <Heart 
+              size={16} 
+              className={`transition-all duration-300 active:scale-125 ${liked ? "fill-clay text-clay scale-110" : "text-espresso/70 hover:text-clay"}`} 
+            /> 
+            <span>{liked ? "Saved in wishlist" : "Add to wishlist"}</span>
           </button>
 
           <div className="mt-10 border-t border-divider">

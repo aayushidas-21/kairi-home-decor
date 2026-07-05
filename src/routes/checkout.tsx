@@ -45,7 +45,7 @@ type Errors = Partial<Record<keyof FormData, string>>;
 
 function Checkout() {
   const navigate = useNavigate();
-  const { cart, products } = useStore();
+  const { cart, products, hydrated } = useStore();
   const { user, profile } = useAuth();
   const items = cart.map((i) => ({ ...i, product: products.find((p) => p.id === i.id) })).filter((i) => i.product);
   const subtotal = items.reduce((s, i) => s + (i.product?.price ?? 0) * i.qty, 0);
@@ -69,6 +69,37 @@ function Checkout() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
 
+  // Restore draft form from sessionStorage on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const saved = sessionStorage.getItem("kairi.checkoutForm");
+      if (saved) {
+        setForm((f) => ({ ...f, ...JSON.parse(saved) }));
+      }
+    } catch (e) {
+      // Ignore parse error
+    }
+  }, []);
+
+  // Persist draft form state to sessionStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    sessionStorage.setItem("kairi.checkoutForm", JSON.stringify(form));
+  }, [form]);
+
+  // Warn before accidental page leave if user has entered details
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (form.fullName || form.address1 || form.phone) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [form]);
+
   useEffect(() => {
     if (profile) {
       setForm((f) => ({
@@ -83,6 +114,26 @@ function Checkout() {
     setForm((f) => ({ ...f, [k]: v }));
     if (errors[k]) setErrors((e) => ({ ...e, [k]: undefined }));
   };
+
+  // Prevent false "empty cart" flash during initial hydration
+  if (!hydrated) {
+    return (
+      <Layout>
+        <section className="mx-auto max-w-[1280px] px-6 py-16 lg:px-10">
+          <div className="animate-pulse space-y-8">
+            <div className="h-10 w-48 rounded-lg bg-parchment/60" />
+            <div className="grid gap-12 lg:grid-cols-[1fr_400px]">
+              <div className="space-y-6">
+                <div className="h-48 rounded-2xl bg-parchment/40" />
+                <div className="h-64 rounded-2xl bg-parchment/40" />
+              </div>
+              <div className="h-80 rounded-2xl bg-parchment/50" />
+            </div>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -167,6 +218,7 @@ function Checkout() {
         }),
       );
       localStorage.removeItem("kairi.cart");
+      sessionStorage.removeItem("kairi.checkoutForm");
 
       setTimeout(() => {
         navigate({ to: "/order/$id", params: { id: res.orderNumber } });

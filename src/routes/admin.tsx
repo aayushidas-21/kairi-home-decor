@@ -27,11 +27,30 @@ export const Route = createFileRoute("/admin")({
   component: AdminDashboard,
 });
 
+type AdminOrderItem = {
+  id: string;
+  name: string;
+  price: number;
+  qty: number;
+};
+
+type AdminShippingAddress = {
+  address1: string;
+  address2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+};
+
 type AdminOrder = {
   id: string;
   orderNumber: string;
   name: string;
   email: string;
+  phone?: string;
+  shippingAddress?: AdminShippingAddress;
+  items?: AdminOrderItem[];
   total: number;
   itemCount: number;
   payMethod: string;
@@ -109,6 +128,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
   
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [selectedOrderDetails, setSelectedOrderDetails] = useState<AdminOrder | null>(null);
   const [fetching, setFetching] = useState(true);
   const [activeNav, setActiveNav] = useState<"dashboard" | "products" | "orders">("dashboard");
   const [showAddForm, setShowAddForm] = useState(false);
@@ -1012,6 +1032,7 @@ function AdminDashboard() {
                         <td className="px-6 py-4">
                           <div className="font-semibold text-espresso">{o.name}</div>
                           <div className="text-xs text-taupe font-mono">{o.email}</div>
+                          {o.phone && <div className="text-[11px] text-taupe">{o.phone}</div>}
                         </td>
                         <td className="px-6 py-4 font-medium">{o.itemCount}</td>
                         <td className="px-6 py-4 uppercase text-xs font-semibold text-espresso/85">{o.payMethod}</td>
@@ -1036,20 +1057,109 @@ function AdminDashboard() {
                             <option value="cancelled">Cancelled</option>
                           </select>
                         </td>
-                        <td className="px-6 py-4 text-right">
-                          <Link
-                            to="/order/$id"
-                            params={{ id: o.orderNumber }}
-                            className="inline-flex items-center text-clay hover:text-espresso font-semibold hover:underline"
+                        <td className="px-6 py-4 text-right space-y-1">
+                          <button
+                            onClick={() => setSelectedOrderDetails(o)}
+                            className="inline-flex items-center text-xs font-medium text-clay hover:text-espresso underline cursor-pointer"
                           >
-                            Details <ChevronRight size={14} className="ml-0.5" />
-                          </Link>
+                            Address & Contact
+                          </button>
                         </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Customer Details & Shipping Address Modal */}
+          {selectedOrderDetails && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+              <div className="relative w-full max-w-xl rounded-2xl bg-linen p-6 shadow-2xl border border-divider max-h-[90vh] overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-divider pb-4">
+                  <div>
+                    <h3 className="font-serif text-2xl text-espresso">Order {selectedOrderDetails.orderNumber}</h3>
+                    <p className="text-xs text-taupe">Customer Details & Delivery Address</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedOrderDetails(null)}
+                    className="grid h-8 w-8 place-items-center rounded-full bg-parchment text-espresso hover:bg-clay hover:text-linen transition-colors"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+
+                <div className="mt-6 space-y-6">
+                  {/* Contact Info Card */}
+                  <div className="rounded-xl border border-divider bg-white/60 p-4">
+                    <div className="eyebrow text-sage mb-2">— Contact Details</div>
+                    <div className="grid gap-2 text-sm text-espresso">
+                      <div><span className="text-taupe font-medium">Name:</span> {selectedOrderDetails.name}</div>
+                      <div><span className="text-taupe font-medium">Email:</span> {selectedOrderDetails.email}</div>
+                      <div><span className="text-taupe font-medium">Phone:</span> {selectedOrderDetails.phone || "Not provided"}</div>
+                    </div>
+                  </div>
+
+                  {/* Shipping Address Card */}
+                  <div className="rounded-xl border border-divider bg-white/60 p-4">
+                    <div className="eyebrow text-clay mb-2">— Shipping Address</div>
+                    {selectedOrderDetails.shippingAddress ? (
+                      <div className="text-sm text-espresso space-y-1">
+                        <div>{selectedOrderDetails.shippingAddress.address1}</div>
+                        {selectedOrderDetails.shippingAddress.address2 && (
+                          <div>{selectedOrderDetails.shippingAddress.address2}</div>
+                        )}
+                        <div>
+                          {selectedOrderDetails.shippingAddress.city}, {selectedOrderDetails.shippingAddress.state} - {selectedOrderDetails.shippingAddress.pincode}
+                        </div>
+                        <div className="font-medium text-taupe">{selectedOrderDetails.shippingAddress.country}</div>
+                      </div>
+                    ) : (
+                      <div className="text-sm text-taupe italic">No shipping address recorded.</div>
+                    )}
+                  </div>
+
+                  {/* Order Items Breakdown */}
+                  {selectedOrderDetails.items && selectedOrderDetails.items.length > 0 && (
+                    <div className="rounded-xl border border-divider bg-white/60 p-4">
+                      <div className="eyebrow text-espresso mb-3">— Items Ordered ({selectedOrderDetails.itemCount})</div>
+                      <div className="space-y-2.5 divide-y divide-divider/50">
+                        {selectedOrderDetails.items.map((it, i) => (
+                          <div key={i} className="flex justify-between items-center text-sm pt-2">
+                            <div>
+                              <div className="font-medium text-espresso">{it.name}</div>
+                              <div className="text-xs text-taupe">Qty: {it.qty} × {formatINR(it.price)}</div>
+                            </div>
+                            <div className="font-serif font-semibold text-espresso">{formatINR(it.qty * it.price)}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Order Payment Summary */}
+                  <div className="flex justify-between items-center rounded-xl bg-parchment p-4 border border-divider">
+                    <div>
+                      <div className="text-xs text-taupe uppercase tracking-wider">Payment Method</div>
+                      <div className="font-semibold text-espresso uppercase text-sm">{selectedOrderDetails.payMethod}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-taupe uppercase tracking-wider">Total Amount</div>
+                      <div className="font-serif text-xl font-bold text-espresso">{formatINR(selectedOrderDetails.total)}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <button
+                    onClick={() => setSelectedOrderDetails(null)}
+                    className="rounded-full bg-clay px-6 py-2.5 text-xs uppercase tracking-wider font-semibold text-linen hover:bg-espresso transition-colors cursor-pointer"
+                  >
+                    Close Details
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
