@@ -127,8 +127,8 @@ export const createOrder = createServerFn({ method: "POST" })
 export const updateOrderStatus = createServerFn({ method: "POST" })
   .validator(
     z.object({
-      orderId: z.string(),
-      status: z.string(),
+      orderId: z.string().min(1),
+      status: z.enum(["processing", "confirmed", "shipped", "delivered", "cancelled"]),
     })
   )
   .handler(async ({ data }) => {
