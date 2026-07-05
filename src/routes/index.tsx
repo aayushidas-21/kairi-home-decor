@@ -60,6 +60,8 @@ function Hero() {
     <section className="grain relative h-[90vh] min-h-[640px] w-full overflow-hidden">
       <img
         src={hero}
+        fetchPriority="high"
+        decoding="async"
         alt="Sunlit linen table with a hand-thrown ceramic vase"
         width={1600}
         height={1100}

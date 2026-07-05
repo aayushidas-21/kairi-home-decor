@@ -53,11 +53,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setHydrated(true);
   }, []);
 
-  // Fetch products & categories dynamically from Firestore and seed missing ones
+  // Fetch products dynamically from Firestore with static fallbacks
   useEffect(() => {
-    async function syncProductsAndCategories() {
+    async function fetchProducts() {
       try {
-        // 1. Sync Products
         const querySnapshot = await getDocs(collection(db, "products"));
         const firestoreProductIds = new Set<string>();
         const list: Product[] = [];
@@ -75,55 +74,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           firestoreProductIds.add(data.id);
         });
 
-        // Seed any static product missing in Firestore
+        // Add any static product missing in Firestore to in-memory list (no DB write overhead)
         for (const p of staticProducts) {
           if (!firestoreProductIds.has(p.id)) {
-            console.log(`Seeding missing product to Firestore: ${p.id}`);
-            await setDoc(doc(db, "products", p.id), {
-              id: p.id,
-              name: p.name,
-              descriptor: p.descriptor,
-              price: p.price,
-              image: p.image,
-              category: p.category,
-              story: p.story,
-              care: p.care,
-              colors: p.colors || null,
-              colorImages: p.colorImages || null,
-              isNew: p.isNew || false,
-              bestseller: p.bestseller || false,
-              stock: p.stock !== undefined ? p.stock : 50
-            });
             list.push(p);
           }
         }
-        setProducts(list);
-
-        // 2. Sync Categories
-        const catSnapshot = await getDocs(collection(db, "categories"));
-        const firestoreCatSlugs = new Set<string>();
-        catSnapshot.forEach((d) => {
-          firestoreCatSlugs.add(d.id);
-        });
-
-        for (const c of categories) {
-          if (!firestoreCatSlugs.has(c.slug)) {
-            console.log(`Seeding missing category to Firestore: ${c.slug}`);
-            await setDoc(doc(db, "categories", c.slug), {
-              name: c.name,
-              slug: c.slug
-            });
-          }
-        }
+        setProducts(list.length > 0 ? list : staticProducts);
       } catch (error) {
-        console.error("Error syncing products/categories with Firestore:", error);
-        // Offline / Permission fallback
+        console.error("Error fetching products from Firestore:", error);
         setProducts(staticProducts);
       } finally {
         setLoadingProducts(false);
       }
     }
-    syncProductsAndCategories();
+    fetchProducts();
   }, []);
 
   useEffect(() => {

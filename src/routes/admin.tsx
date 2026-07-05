@@ -263,11 +263,6 @@ function AdminDashboard() {
 
       toast.success(editMode ? "Product updated successfully ✦" : "New product added successfully ✦");
       handleCancelForm();
-      
-      // Refresh list
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (err) {
       console.error("Failed to save product:", err);
       toast.error("Failed to save product. Verify database connection.");
