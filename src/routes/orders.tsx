@@ -94,6 +94,11 @@ function OrdersHistory() {
     }
   };
 
+  // Calculations for customer stats
+  const totalOrdersPlaced = orders.length;
+  const totalPiecesCollected = orders.filter(o => o.status !== "cancelled").reduce((sum, o) => sum + o.itemCount, 0);
+  const activeOrdersCount = orders.filter(o => o.status !== "delivered" && o.status !== "cancelled").length;
+
   if (loading || fetching) {
     return (
       <Layout>
@@ -112,7 +117,7 @@ function OrdersHistory() {
         <div className="absolute bottom-20 right-1/4 w-[450px] h-[450px] rounded-full bg-[#7a8c6e]/4 blur-[130px] pointer-events-none translate-x-1/2" />
         
         <section className="mx-auto max-w-[1000px] px-6 py-12 lg:px-10 relative z-10">
-          <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
+          <div className="mb-10 flex flex-wrap items-center justify-between gap-4 border-b border-divider/60 pb-6">
             <div>
               <Link to="/" className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-taupe hover:text-espresso transition-colors mb-3">
                 <ArrowLeft size={12} /> Storefront
@@ -123,6 +128,24 @@ function OrdersHistory() {
               <p className="text-xs text-taupe mt-1.5 leading-relaxed">Review past collections and track active shipments.</p>
             </div>
           </div>
+
+          {/* Gallery Collection Metrics */}
+          {orders.length > 0 && (
+            <div className="grid gap-4 grid-cols-3 mb-10">
+              <div className="bg-white/35 backdrop-blur-md border border-divider rounded-2xl p-4 text-center transition-all duration-500 hover:border-clay/20 hover:shadow-warm-sm">
+                <span className="text-[9px] uppercase tracking-wider text-taupe font-semibold block">Orders Placed</span>
+                <span className="font-serif text-2xl font-bold text-espresso mt-1 block">{totalOrdersPlaced}</span>
+              </div>
+              <div className="bg-white/35 backdrop-blur-md border border-divider rounded-2xl p-4 text-center transition-all duration-500 hover:border-clay/20 hover:shadow-warm-sm">
+                <span className="text-[9px] uppercase tracking-wider text-taupe font-semibold block">Pieces Collected</span>
+                <span className="font-serif text-2xl font-bold text-espresso mt-1 block">{totalPiecesCollected}</span>
+              </div>
+              <div className="bg-white/35 backdrop-blur-md border border-divider rounded-2xl p-4 text-center transition-all duration-500 hover:border-clay/20 hover:shadow-warm-sm">
+                <span className="text-[9px] uppercase tracking-wider text-taupe font-semibold block">Active Shipments</span>
+                <span className="font-serif text-2xl font-bold text-clay mt-1 block">{activeOrdersCount}</span>
+              </div>
+            </div>
+          )}
 
           {orders.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-divider bg-white/20 p-12 text-center">
@@ -368,7 +391,7 @@ function OrderTimeline({ status }: { status: string }) {
                 <div 
                   className={`h-8 w-8 rounded-full border grid place-items-center transition-all duration-300 ${
                     isActive 
-                      ? "bg-clay border-clay text-linen shadow-warm-sm" 
+                      ? "bg-clay border-clay text-linen shadow-[0_0_15px_rgba(181,132,90,0.35)]" 
                       : "bg-linen border-divider text-taupe/80"
                   }`}
                   title={step.label}
