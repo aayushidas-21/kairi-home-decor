@@ -54,8 +54,9 @@ export function Navbar() {
       }`}
     >
       <div className="mx-auto flex h-20 max-w-[1400px] items-center justify-between gap-6 px-6 lg:px-10">
-        <Link to="/" className="font-serif text-3xl tracking-tight text-espresso md:text-[2rem]">
-          Kairi
+        <Link to="/" className="flex flex-col items-center justify-center text-espresso focus-visible:outline-none group">
+          <span className="text-[10px] md:text-xs font-sans tracking-[0.15em] text-espresso/80 -mb-1.5 select-none transition-colors group-hover:text-clay">कैरी</span>
+          <span className="font-serif text-3xl tracking-tight md:text-[2rem] select-none transition-colors group-hover:text-clay">Kairi</span>
         </Link>
 
         <nav className="hidden items-center gap-10 md:flex">

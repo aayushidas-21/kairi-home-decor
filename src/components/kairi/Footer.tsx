@@ -6,7 +6,10 @@ export function Footer() {
     <footer className="mt-24 border-t border-divider bg-parchment/60">
       <div className="mx-auto grid max-w-[1400px] gap-12 px-6 py-16 md:grid-cols-4 lg:px-10">
         <div>
-          <div className="font-serif text-3xl text-espresso">Kairi</div>
+          <div className="flex flex-col items-start leading-none text-espresso select-none">
+            <span className="text-[10px] font-sans tracking-[0.15em] text-espresso/80 -mb-1.5">कैरी</span>
+            <span className="font-serif text-3xl">Kairi</span>
+          </div>
           <p className="mt-3 max-w-xs font-serif text-lg italic text-taupe">
             Intentional spaces. Everyday beauty.
           </p>
