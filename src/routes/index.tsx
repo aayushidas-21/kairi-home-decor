@@ -74,7 +74,7 @@ function Hero() {
           <span className="font-light">Spaces That</span>
           <br />
           <span className="italic">
-            Feel Like <span className="text-clay">You.</span>
+            Feel Like <span className="font-semibold" style={{ color: '#8f5c38' }}>You.</span>
           </span>
         </h1>
         <p className="mt-8 max-w-md text-base text-espresso/75 md:text-lg">
