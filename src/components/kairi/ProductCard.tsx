@@ -2,13 +2,14 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Eye } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { type Product } from "@/lib/products";
+import { products as staticProducts, type Product } from "@/lib/products";
 import { useStore, formatINR } from "@/lib/store";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToCart, toggleWishlist, wishlist, setQuickViewId } = useStore();
   const liked = wishlist.includes(product.id);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [imgSrc, setImgSrc] = useState(product.image);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = e.currentTarget;
@@ -48,11 +49,18 @@ export function ProductCard({ product }: { product: Product }) {
           className="block aspect-[4/5] w-full"
         >
           <img
-            src={product.image}
+            src={imgSrc}
             alt={product.name}
             loading="lazy"
             width={800}
             height={900}
+            onError={() => {
+              // Fallback to static product asset if remote URL fails
+              const staticMatch = staticProducts.find((p) => p.id === product.id);
+              if (staticMatch?.image && imgSrc !== staticMatch.image) {
+                setImgSrc(staticMatch.image);
+              }
+            }}
             className="h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
           />
         </Link>

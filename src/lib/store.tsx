@@ -64,9 +64,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         querySnapshot.forEach((d) => {
           const data = d.data() as Product;
           const staticMatch = staticProducts.find((p) => p.id === data.id);
+          
+          // Prefer remote uploads (http/https/data) from Firestore; otherwise fallback to Vite's bundled static asset
+          const validImage = 
+            data.image && (data.image.startsWith("http://") || data.image.startsWith("https://") || data.image.startsWith("data:"))
+              ? data.image
+              : (staticMatch?.image || data.image);
+
           list.push({
             ...staticMatch,
             ...data,
+            image: validImage,
             colorImages: data.colorImages || staticMatch?.colorImages,
             colors: data.colors || staticMatch?.colors,
             stock: data.stock !== undefined ? data.stock : 50
