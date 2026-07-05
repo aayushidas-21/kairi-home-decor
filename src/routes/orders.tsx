@@ -106,44 +106,50 @@ function OrdersHistory() {
 
   return (
     <Layout>
-      <section className="mx-auto max-w-[1000px] px-6 py-12 lg:px-10">
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <Link to="/" className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-taupe hover:text-espresso transition-colors mb-3">
-              <ArrowLeft size={12} /> Storefront
-            </Link>
-            <h1 className="font-serif text-4xl text-espresso tracking-tight md:text-5xl">
-              Order <span className="italic">History.</span>
-            </h1>
-            <p className="text-xs text-taupe mt-1.5 leading-relaxed">Review past collections and track active shipments.</p>
+      <div className="relative overflow-hidden min-h-[80vh]">
+        {/* Classy Ambient Glow Orbs */}
+        <div className="absolute top-10 left-1/4 w-[500px] h-[500px] rounded-full bg-clay/5 blur-[140px] pointer-events-none -translate-x-1/2" />
+        <div className="absolute bottom-20 right-1/4 w-[450px] h-[450px] rounded-full bg-[#7a8c6e]/4 blur-[130px] pointer-events-none translate-x-1/2" />
+        
+        <section className="mx-auto max-w-[1000px] px-6 py-12 lg:px-10 relative z-10">
+          <div className="mb-10 flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <Link to="/" className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-taupe hover:text-espresso transition-colors mb-3">
+                <ArrowLeft size={12} /> Storefront
+              </Link>
+              <h1 className="font-serif text-4xl text-espresso tracking-tight md:text-5xl">
+                Order <span className="italic">History.</span>
+              </h1>
+              <p className="text-xs text-taupe mt-1.5 leading-relaxed">Review past collections and track active shipments.</p>
+            </div>
           </div>
-        </div>
 
-        {orders.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-divider bg-white/20 p-12 text-center">
-            <ShoppingBag className="mx-auto text-taupe/60 mb-4" size={32} strokeWidth={1.2} />
-            <h3 className="font-serif text-lg text-espresso font-semibold">No orders yet</h3>
-            <p className="text-xs text-taupe mt-1 max-w-sm mx-auto">Once you acquire Kairi home decor pieces, they will appear here.</p>
-            <Link
-              to="/shop"
-              className="mt-6 inline-block rounded-full bg-clay px-6 py-3 text-xs uppercase tracking-wider text-linen hover:bg-espresso transition-all"
-            >
-              Explore Shop
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {orders.map((order) => (
-              <OrderCard 
-                key={order.id} 
-                order={order} 
-                products={products} 
-                onCancel={() => handleCancelOrder(order.id)} 
-              />
-            ))}
-          </div>
-        )}
-      </section>
+          {orders.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-divider bg-white/20 p-12 text-center">
+              <ShoppingBag className="mx-auto text-taupe/60 mb-4" size={32} strokeWidth={1.2} />
+              <h3 className="font-serif text-lg text-espresso font-semibold">No orders yet</h3>
+              <p className="text-xs text-taupe mt-1 max-w-sm mx-auto">Once you acquire Kairi home decor pieces, they will appear here.</p>
+              <Link
+                to="/shop"
+                className="mt-6 inline-block rounded-full bg-clay px-6 py-3 text-xs uppercase tracking-wider text-linen hover:bg-espresso transition-all"
+              >
+                Explore Shop
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {orders.map((order) => (
+                <OrderCard 
+                  key={order.id} 
+                  order={order} 
+                  products={products} 
+                  onCancel={() => handleCancelOrder(order.id)} 
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
     </Layout>
   );
 }
@@ -197,9 +203,14 @@ function OrderCard({
         transform: hovered
           ? `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(-4px)`
           : "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)",
-        transition: hovered ? "transform 0.05s ease-out, shadow 0.3s" : "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), shadow 0.3s"
+        boxShadow: hovered 
+          ? "0 20px 40px -15px rgba(44, 36, 32, 0.08), 0 0 30px 4px rgba(181, 132, 90, 0.12)" 
+          : "0 4px 20px -2px rgba(44, 36, 32, 0.03)",
+        transition: hovered 
+          ? "transform 0.05s ease-out, box-shadow 0.3s, border-color 0.3s" 
+          : "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s, border-color 0.3s"
       }}
-      className="rounded-2xl border border-divider bg-white/45 backdrop-blur-md p-6 shadow-warm-sm transition-all duration-300 hover:shadow-warm-md"
+      className="rounded-2xl border border-divider bg-white/45 backdrop-blur-md p-6 transition-all duration-300 hover:border-clay/25"
     >
       {/* Card Top */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-divider pb-4 mb-4">
