@@ -57,7 +57,7 @@ function KPI3DCard({
 }: { 
   title: string; 
   value: string | number; 
-  subtext: string;
+  subtext?: string;
   icon: any; 
   bgIcon: any; 
   iconColorClass: string; 
@@ -72,8 +72,8 @@ function KPI3DCard({
     const y = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rotateX = ((centerY - y) / centerY) * 8;
-    const rotateY = ((x - centerX) / centerX) * 8;
+    const rotateX = ((centerY - y) / centerY) * 12;
+    const rotateY = ((x - centerX) / centerX) * 12;
     setTilt({ x: rotateX, y: rotateY });
   };
 
@@ -89,24 +89,22 @@ function KPI3DCard({
       onMouseLeave={handleMouseLeave}
       style={{ 
         transform: hovered 
-          ? `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(-4px)` 
+          ? `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(-6px)` 
           : "perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)",
         transition: hovered ? "transform 0.05s ease-out, shadow 0.3s" : "transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), shadow 0.3s"
       }}
-      className="relative overflow-hidden rounded-2xl border border-divider bg-white/70 backdrop-blur-md p-6 flex items-center justify-between shadow-warm-sm transition-all duration-300 hover:shadow-warm-md cursor-default group"
+      className="relative overflow-hidden rounded-2xl border border-divider bg-white/45 backdrop-blur-md p-6 flex items-center gap-5 shadow-warm-sm transition-all duration-300 hover:shadow-warm-md cursor-default group"
     >
-      <div className="flex items-center gap-5">
-        <div className={`grid h-12 w-12 place-items-center rounded-xl transition-all duration-300 ${iconColorClass}`}>
-          <Icon size={20} />
-        </div>
-        <div className="z-10">
-          <p className="text-xs uppercase tracking-wider text-taupe font-medium">{title}</p>
-          <p className="mt-1 font-serif text-2xl font-bold text-espresso">{value}</p>
-          <p className="text-[10px] text-taupe/90 mt-1">{subtext}</p>
-        </div>
+      <div className={`grid h-12 w-12 place-items-center rounded-full transition-all duration-300 ${iconColorClass}`}>
+        <Icon size={20} />
+      </div>
+      <div className="z-10">
+        <p className="text-xs uppercase tracking-wider text-taupe font-medium">{title}</p>
+        <p className="mt-1 font-serif text-3xl font-semibold text-espresso">{value}</p>
+        {subtext && <p className="text-[10px] text-taupe/90 mt-1">{subtext}</p>}
       </div>
       <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-5 text-espresso pointer-events-none group-hover:scale-110 transition-transform duration-500">
-        <BgIcon size={110} />
+        <BgIcon size={120} />
       </div>
     </div>
   );
@@ -326,6 +324,7 @@ function AdminDashboard() {
   // Calculations for KPIs
   const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0);
   const totalOrders = orders.length;
+  const totalRegisteredUsers = users.length;
   
   // Active catalog products
   const activeCatalogCount = products.length;
@@ -548,7 +547,7 @@ function AdminDashboard() {
               </div>
 
               {/* Stat Card Grid */}
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                 <KPI3DCard 
                   title="Total Revenue" 
                   value={formatINR(totalRevenue)} 
@@ -564,6 +563,14 @@ function AdminDashboard() {
                   icon={ShoppingBag} 
                   bgIcon={ShoppingBag} 
                   iconColorClass="bg-[#7a8c6e]/10 text-[#7a8c6e] group-hover:bg-[#7a8c6e] group-hover:text-linen" 
+                />
+                <KPI3DCard 
+                  title="Customers" 
+                  value={totalRegisteredUsers} 
+                  subtext="Registered accounts"
+                  icon={Users} 
+                  bgIcon={Users} 
+                  iconColorClass="bg-[#8c827a]/15 text-[#8c827a] group-hover:bg-[#8c827a] group-hover:text-linen" 
                 />
                 <KPI3DCard 
                   title="Active Catalog" 
