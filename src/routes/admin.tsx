@@ -162,6 +162,19 @@ function AdminDashboard() {
     fetchData();
   }, [authUser, role, loading]);
 
+  // Order Status Update Handler
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
+    try {
+      const orderRef = doc(db, "orders", orderId);
+      await setDoc(orderRef, { status: newStatus }, { merge: true });
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      toast.success(`Order status updated to ${newStatus} ✦`);
+    } catch (err) {
+      console.error("Failed to update order status:", err);
+      toast.error("Failed to update order status");
+    }
+  };
+
   // Image Upload Handler
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1013,9 +1026,17 @@ function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 font-serif font-semibold text-espresso">{formatINR(o.total)}</td>
                         <td className="px-6 py-4">
-                          <span className="inline-block rounded-full bg-sage/10 border border-sage/20 px-2.5 py-1 text-xs font-semibold text-sage capitalize shadow-warm-sm">
-                            {o.status || "processing"}
-                          </span>
+                          <select
+                            value={o.status || "processing"}
+                            onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
+                            className="bg-linen border border-divider text-espresso text-xs font-semibold rounded-full px-2.5 py-1 uppercase tracking-wider focus:outline-none focus:ring-1 focus:ring-clay cursor-pointer shadow-warm-sm"
+                          >
+                            <option value="processing">Processing</option>
+                            <option value="confirmed">Confirmed</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          </select>
                         </td>
                         <td className="px-6 py-4 text-right">
                           <Link

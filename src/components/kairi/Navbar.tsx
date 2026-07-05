@@ -133,6 +133,15 @@ export function Navbar() {
                     </div>
                     
                     <ul className="space-y-1">
+                      <li>
+                        <Link
+                          to="/orders"
+                          onClick={() => setDropdownOpen(false)}
+                          className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs uppercase tracking-wider text-espresso/85 hover:bg-parchment hover:text-clay transition-colors"
+                        >
+                          <ShoppingBag size={14} /> Order History
+                        </Link>
+                      </li>
                       {role === "admin" && (
                         <li>
                           <Link
@@ -207,6 +216,13 @@ export function Navbar() {
                     <p className="text-xs text-taupe">{user.email}</p>
                   </div>
                   <div className="flex flex-col gap-2 pt-1">
+                    <Link
+                      to="/orders"
+                      onClick={() => setOpen(false)}
+                      className="flex items-center gap-2 text-xs uppercase tracking-wider text-clay"
+                    >
+                      <ShoppingBag size={14} /> Order History
+                    </Link>
                     {role === "admin" && (
                       <Link
                         to="/admin"

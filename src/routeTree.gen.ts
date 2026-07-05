@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JournalRouteImport } from './routes/journal'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -36,6 +37,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -98,6 +104,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/journal': typeof JournalRoute
   '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/wishlist': typeof WishlistRoute
@@ -113,6 +120,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/journal': typeof JournalRoute
   '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/wishlist': typeof WishlistRoute
@@ -129,6 +137,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/journal': typeof JournalRoute
   '/login': typeof LoginRoute
+  '/orders': typeof OrdersRoute
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/wishlist': typeof WishlistRoute
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/journal'
     | '/login'
+    | '/orders'
     | '/shop'
     | '/sitemap.xml'
     | '/wishlist'
@@ -161,6 +171,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/journal'
     | '/login'
+    | '/orders'
     | '/shop'
     | '/sitemap.xml'
     | '/wishlist'
@@ -176,6 +187,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/journal'
     | '/login'
+    | '/orders'
     | '/shop'
     | '/sitemap.xml'
     | '/wishlist'
@@ -192,6 +204,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   JournalRoute: typeof JournalRoute
   LoginRoute: typeof LoginRoute
+  OrdersRoute: typeof OrdersRoute
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   WishlistRoute: typeof WishlistRoute
@@ -220,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -304,6 +324,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   JournalRoute: JournalRoute,
   LoginRoute: LoginRoute,
+  OrdersRoute: OrdersRoute,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   WishlistRoute: WishlistRoute,
