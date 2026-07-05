@@ -38,14 +38,6 @@ type AdminOrder = {
   status: string;
 };
 
-type AdminUser = {
-  id: string;
-  fullName: string;
-  email: string;
-  role: string;
-  createdAt: string;
-};
-
 // 3D Tilt KPI Card Component
 function KPI3DCard({ 
   title, 
@@ -116,9 +108,8 @@ function AdminDashboard() {
   const navigate = useNavigate();
   
   const [orders, setOrders] = useState<AdminOrder[]>([]);
-  const [users, setUsers] = useState<AdminUser[]>([]);
   const [fetching, setFetching] = useState(true);
-  const [activeNav, setActiveNav] = useState<"dashboard" | "products" | "orders" | "users">("dashboard");
+  const [activeNav, setActiveNav] = useState<"dashboard" | "products" | "orders">("dashboard");
   const [showAddForm, setShowAddForm] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -161,15 +152,6 @@ function AdminDashboard() {
           fetchedOrders.push({ id: doc.id, ...doc.data() } as AdminOrder);
         });
         setOrders(fetchedOrders);
-
-        // Fetch Users
-        const usersQuery = query(collection(db, "users"), orderBy("createdAt", "desc"));
-        const usersSnap = await getDocs(usersQuery);
-        const fetchedUsers: AdminUser[] = [];
-        usersSnap.forEach((doc) => {
-          fetchedUsers.push({ id: doc.id, ...doc.data() } as AdminUser);
-        });
-        setUsers(fetchedUsers);
       } catch (err) {
         console.error("Error fetching admin data:", err);
       } finally {
@@ -410,16 +392,6 @@ function AdminDashboard() {
               >
                 <ShoppingBag size={15} /> Orders
               </button>
-              <button
-                onClick={() => { setActiveNav("users"); handleCancelForm(); }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all ${
-                  activeNav === "users"
-                    ? "bg-clay text-linen shadow-warm-sm"
-                    : "text-espresso/70 hover:bg-parchment hover:text-espresso"
-                }`}
-              >
-                <Users size={15} /> Users
-              </button>
             </nav>
           </div>
 
@@ -505,14 +477,6 @@ function AdminDashboard() {
                   >
                     <ShoppingBag size={14} /> Orders
                   </button>
-                  <button
-                    onClick={() => { setActiveNav("users"); setSidebarOpen(false); handleCancelForm(); }}
-                    className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all ${
-                      activeNav === "users" ? "bg-clay text-linen" : "text-espresso/70"
-                    }`}
-                  >
-                    <Users size={14} /> Users
-                  </button>
                 </nav>
               </div>
 
@@ -547,7 +511,7 @@ function AdminDashboard() {
               </div>
 
               {/* Stat Card Grid */}
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                 <KPI3DCard 
                   title="Total Revenue" 
                   value={formatINR(totalRevenue)} 
@@ -563,14 +527,6 @@ function AdminDashboard() {
                   icon={ShoppingBag} 
                   bgIcon={ShoppingBag} 
                   iconColorClass="bg-[#7a8c6e]/10 text-[#7a8c6e] group-hover:bg-[#7a8c6e] group-hover:text-linen" 
-                />
-                <KPI3DCard 
-                  title="Customers" 
-                  value={totalRegisteredUsers} 
-                  subtext="Registered accounts"
-                  icon={Users} 
-                  bgIcon={Users} 
-                  iconColorClass="bg-[#8c827a]/15 text-[#8c827a] group-hover:bg-[#8c827a] group-hover:text-linen" 
                 />
                 <KPI3DCard 
                   title="Active Catalog" 
@@ -1074,48 +1030,6 @@ function AdminDashboard() {
                       </tr>
                     ))
                   )}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Users Tab Content */}
-          {activeNav === "users" && (
-            <div className="overflow-x-auto rounded-2xl border border-divider bg-white/55 backdrop-blur-sm shadow-warm-sm animate-in fade-in duration-300">
-              <table className="w-full border-collapse text-left text-sm text-espresso">
-                <thead className="bg-linen/40 text-xs uppercase tracking-wider text-taupe border-b border-divider font-semibold">
-                  <tr>
-                    <th className="px-6 py-4">Name</th>
-                    <th className="px-6 py-4">Email</th>
-                    <th className="px-6 py-4">Role</th>
-                    <th className="px-6 py-4">Registered On</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-divider">
-                  {users.map((u) => (
-                    <tr key={u.id} className="hover:bg-linen/15 transition-all duration-200">
-                      <td className="px-6 py-4 font-semibold text-espresso">{u.fullName}</td>
-                      <td className="px-6 py-4 font-mono text-xs text-taupe">{u.email}</td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold uppercase tracking-wider border ${
-                            u.role === "admin"
-                              ? "bg-clay/10 border-clay/20 text-clay"
-                              : "bg-espresso/5 border-espresso/10 text-espresso/80"
-                          }`}
-                        >
-                          {u.role}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-xs text-taupe">
-                        {u.createdAt ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        }) : "—"}
-                      </td>
-                    </tr>
-                  ))}
                 </tbody>
               </table>
             </div>
