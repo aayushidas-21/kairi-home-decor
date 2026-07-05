@@ -388,7 +388,7 @@ function OrderTimeline({ status }: { status: string }) {
   );
 }
 
-// Cancellation countdown timer button
+// Cancellation button (disappears after 2 hours)
 function CancelButton({ 
   createdAt, 
   orderId, 
@@ -400,11 +400,11 @@ function CancelButton({
   status: string; 
   onCancel: () => void; 
 }) {
-  const [timeLeft, setTimeLeft] = useState<string | null>(null);
+  const [showCancel, setShowCancel] = useState(false);
 
   useEffect(() => {
     if (status === "cancelled" || status === "shipped" || status === "delivered") {
-      setTimeLeft(null);
+      setShowCancel(false);
       return;
     }
 
@@ -416,27 +416,18 @@ function CancelButton({
       const remaining = twoHours - elapsed;
 
       if (remaining <= 0) {
-        setTimeLeft(null);
+        setShowCancel(false);
       } else {
-        const hours = Math.floor(remaining / (1000 * 60 * 60));
-        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
-        
-        let label = "";
-        if (hours > 0) label += `${hours}h `;
-        label += `${minutes}m `;
-        label += `${seconds}s`;
-        
-        setTimeLeft(label);
+        setShowCancel(true);
       }
     };
 
     checkTimer();
-    const interval = setInterval(checkTimer, 1000);
+    const interval = setInterval(checkTimer, 10000);
     return () => clearInterval(interval);
   }, [createdAt, status]);
 
-  if (!timeLeft) return null;
+  if (!showCancel) return null;
 
   return (
     <button
@@ -447,7 +438,7 @@ function CancelButton({
       }}
       className="text-[10px] uppercase tracking-wider font-semibold border border-red-200 text-red-500 hover:bg-red-50 hover:border-red-300 rounded-full px-4 py-2 transition-all flex items-center gap-1 focus:outline-none"
     >
-      <Clock size={11} /> Cancel ({timeLeft})
+      Cancel Order
     </button>
   );
 }
