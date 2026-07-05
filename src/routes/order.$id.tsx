@@ -73,9 +73,10 @@ function OrderConfirmation() {
     if (!isConfirm) return;
 
     try {
+      const { updateDoc } = await import("firebase/firestore");
       const orderId = order.id || order.orderNumber;
       const orderRef = doc(db, "orders", orderId);
-      await setDoc(orderRef, { status: "cancelled" }, { merge: true });
+      await updateDoc(orderRef, { status: "cancelled" });
       setOrder(prev => prev ? { ...prev, status: "cancelled" } : null);
       toast.success("Order has been cancelled successfully ✦");
     } catch (err) {

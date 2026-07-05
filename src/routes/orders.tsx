@@ -84,8 +84,9 @@ function OrdersHistory() {
     if (!isConfirm) return;
 
     try {
+      const { updateDoc } = await import("firebase/firestore");
       const orderRef = doc(db, "orders", orderId);
-      await setDoc(orderRef, { status: "cancelled" }, { merge: true });
+      await updateDoc(orderRef, { status: "cancelled" });
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: "cancelled" } : o));
       toast.success("Order has been cancelled successfully ✦");
     } catch (err) {

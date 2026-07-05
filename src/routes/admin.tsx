@@ -166,11 +166,9 @@ function AdminDashboard() {
   // Order Status Update Handler
   const handleUpdateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      await updateOrderStatus({
-        data: {
-          orderId,
-          status: newStatus,
-        }
+      const { updateDoc, doc: firestoreDoc } = await import("firebase/firestore");
+      await updateDoc(firestoreDoc(db, "orders", orderId), {
+        status: newStatus,
       });
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
       toast.success(`Order status updated to ${newStatus} ✦`);
