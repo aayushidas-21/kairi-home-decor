@@ -93,8 +93,34 @@ export const createOrder = createServerFn({ method: "POST" })
     // 2. Generate same order number format
     const orderNumber = `KAI-${Date.now().toString(36).toUpperCase()}`;
 
-    // 3. Write order document to Firestore
-    const orderData = {
+    // 3. Initiate Razorpay order if payMethod is card or upi
+    let razorpayOrderId: string | null = null;
+    let isMock = true;
+
+    if (data.payMethod !== "cod") {
+      try {
+        const { razorpayInstance } = await import("@/lib/razorpay.server");
+        if (razorpayInstance) {
+          const rzpOrder = await razorpayInstance.orders.create({
+            amount: Math.round(total * 100), // in paise
+            currency: "INR",
+            receipt: orderNumber,
+          });
+          razorpayOrderId = rzpOrder.id;
+          isMock = false;
+        }
+      } catch (err) {
+        console.error("Failed to create Razorpay order on server:", err);
+      }
+
+      if (!razorpayOrderId) {
+        // Fallback mock order ID for sandbox / testing when credentials are not yet configured
+        razorpayOrderId = `order_mock_${Math.random().toString(36).substring(2, 15).toUpperCase()}`;
+      }
+    }
+
+    // 4. Write order document to Firestore
+    const orderData: any = {
       orderNumber,
       userId: data.userId,
       email: data.email,
@@ -107,6 +133,8 @@ export const createOrder = createServerFn({ method: "POST" })
       payMethod: data.payMethod,
       createdAt: new Date().toISOString(),
       status: "processing",
+      paymentStatus: data.payMethod === "cod" ? "pending_cod" : "pending",
+      razorpayOrderId,
     };
 
     if (adminDbInstance) {
@@ -117,11 +145,69 @@ export const createOrder = createServerFn({ method: "POST" })
       await setDoc(doc(db, "orders", orderNumber), orderData);
     }
 
+    const { keyId } = await import("@/lib/razorpay.server");
+
     return {
       orderNumber,
       total,
       itemCount,
+      razorpayOrderId,
+      razorpayKeyId: keyId || "rzp_test_mockkey",
+      isMock,
     };
+  });
+
+export const verifyRazorpayPayment = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      orderNumber: z.string(),
+      razorpayPaymentId: z.string().optional(),
+      razorpayOrderId: z.string().optional(),
+      razorpaySignature: z.string().optional(),
+      isMock: z.boolean(),
+    })
+  )
+  .handler(async ({ data }) => {
+    const { keySecret } = await import("@/lib/razorpay.server");
+    
+    if (!data.isMock && keySecret && data.razorpayPaymentId && data.razorpayOrderId && data.razorpaySignature) {
+      const crypto = await import("crypto");
+      const generated_signature = crypto
+        .createHmac("sha256", keySecret)
+        .update(data.razorpayOrderId + "|" + data.razorpayPaymentId)
+        .digest("hex");
+      
+      if (generated_signature !== data.razorpaySignature) {
+        throw new Error("Invalid payment signature. Potential security tampering detected.");
+      }
+    }
+
+    // Update order in Firestore
+    let adminDbInstance = null;
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin");
+      adminDbInstance = adminDb;
+    } catch (e) {
+      console.warn("Firebase Admin SDK not available, falling back to Client SDK:", e);
+    }
+
+    const updateFields = {
+      paymentStatus: "paid",
+      status: "confirmed",
+      razorpayPaymentId: data.razorpayPaymentId || "mock_payment_id",
+      razorpaySignature: data.razorpaySignature || "mock_signature",
+      paidAt: new Date().toISOString(),
+    };
+
+    if (adminDbInstance) {
+      await adminDbInstance.collection("orders").doc(data.orderNumber).update(updateFields);
+    } else {
+      const { db } = await import("@/lib/firebase");
+      const { doc, updateDoc } = await import("firebase/firestore");
+      await updateDoc(doc(db, "orders", data.orderNumber), updateFields);
+    }
+
+    return { success: true };
   });
 
 export const updateOrderStatus = createServerFn({ method: "POST" })

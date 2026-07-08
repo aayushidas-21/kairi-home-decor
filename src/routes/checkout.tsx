@@ -7,7 +7,7 @@ import { Layout } from "@/components/kairi/Layout";
 
 import { useStore, formatINR } from "@/lib/store";
 import { useAuth } from "@/lib/auth";
-import { createOrder } from "../lib/order.server";
+import { createOrder, verifyRazorpayPayment } from "../lib/order.server";
 
 
 export const Route = createFileRoute("/checkout")({
@@ -68,6 +68,74 @@ function Checkout() {
   });
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [showMockPaymentModal, setShowMockPaymentModal] = useState(false);
+  const [mockOrderDetails, setMockOrderDetails] = useState<any>(null);
+  const [mockPaymentProcessing, setMockPaymentProcessing] = useState(false);
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (typeof window === "undefined") {
+        resolve(false);
+        return;
+      }
+      if ((window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const completeOrderRedirect = (res: any) => {
+    sessionStorage.setItem(
+      "kairi.lastOrder",
+      JSON.stringify({
+        orderNumber: res.orderNumber,
+        email: form.email,
+        name: form.fullName,
+        total: res.total,
+        itemCount: res.itemCount,
+        payMethod: form.payMethod,
+        createdAt: new Date().toISOString(),
+      }),
+    );
+    localStorage.removeItem("kairi.cart");
+    sessionStorage.removeItem("kairi.checkoutForm");
+
+    setTimeout(() => {
+      navigate({ to: "/order/$id", params: { id: res.orderNumber } });
+    }, 700);
+  };
+
+  const handleMockPaymentSubmit = async () => {
+    if (!mockOrderDetails) return;
+    setMockPaymentProcessing(true);
+    // Add a little delay as requested (e.g. 1.8 seconds)
+    await new Promise((resolve) => setTimeout(resolve, 1800));
+    try {
+      await verifyRazorpayPayment({
+        data: {
+          orderNumber: mockOrderDetails.orderNumber,
+          razorpayPaymentId: `pay_mock_${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+          razorpayOrderId: mockOrderDetails.razorpayOrderId,
+          razorpaySignature: `sig_mock_${Math.random().toString(36).substring(2, 12).toUpperCase()}`,
+          isMock: true,
+        }
+      });
+      toast.success("Sandbox payment verified! ✦");
+      setShowMockPaymentModal(false);
+      setMockPaymentProcessing(false);
+      completeOrderRedirect(mockOrderDetails);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to complete mock payment.");
+      setMockPaymentProcessing(false);
+    }
+  };
 
   // Restore draft form from sessionStorage on mount
   useEffect(() => {
@@ -205,24 +273,69 @@ function Checkout() {
         }
       });
 
-      sessionStorage.setItem(
-        "kairi.lastOrder",
-        JSON.stringify({
-          orderNumber: res.orderNumber,
-          email: form.email,
-          name: form.fullName,
-          total: res.total,
-          itemCount: res.itemCount,
-          payMethod: form.payMethod,
-          createdAt: new Date().toISOString(),
-        }),
-      );
-      localStorage.removeItem("kairi.cart");
-      sessionStorage.removeItem("kairi.checkoutForm");
+      if (form.payMethod === "cod") {
+        completeOrderRedirect(res);
+      } else {
+        // Online payments: Load Razorpay
+        if (res.isMock) {
+          // Trigger the beautiful themed mock payment modal
+          setMockOrderDetails(res);
+          setShowMockPaymentModal(true);
+        } else {
+          const scriptLoaded = await loadRazorpayScript();
+          if (!scriptLoaded) {
+            toast.error("Failed to load payment gateway script. Please try again.");
+            setSubmitting(false);
+            return;
+          }
 
-      setTimeout(() => {
-        navigate({ to: "/order/$id", params: { id: res.orderNumber } });
-      }, 700);
+          const options = {
+            key: res.razorpayKeyId,
+            amount: Math.round(res.total * 100),
+            currency: "INR",
+            name: "Kairi Home Decor",
+            description: `Order Ref: ${res.orderNumber}`,
+            order_id: res.razorpayOrderId,
+            handler: async (response: any) => {
+              try {
+                toast.loading("Verifying payment... ✦", { id: "verify-toast" });
+                await new Promise((resolve) => setTimeout(resolve, 1500)); // slight delay as requested
+                await verifyRazorpayPayment({
+                  data: {
+                    orderNumber: res.orderNumber,
+                    razorpayPaymentId: response.razorpay_payment_id,
+                    razorpayOrderId: response.razorpay_order_id,
+                    razorpaySignature: response.razorpay_signature,
+                    isMock: false,
+                  }
+                });
+                toast.success("Payment verified successfully!", { id: "verify-toast" });
+                completeOrderRedirect(res);
+              } catch (err) {
+                console.error("Signature verification failed:", err);
+                toast.error("Payment verification failed. Potential security risk detected.", { id: "verify-toast" });
+                setSubmitting(false);
+              }
+            },
+            prefill: {
+              name: form.fullName,
+              email: form.email,
+              contact: form.phone,
+            },
+            theme: {
+              color: "#B5845A",
+            },
+            modal: {
+              ondismiss: () => {
+                toast.error("Payment cancelled by user.");
+                setSubmitting(false);
+              }
+            }
+          };
+          const rzp = new (window as any).Razorpay(options);
+          rzp.open();
+        }
+      }
     } catch (err) {
       console.error("Failed to save order:", err);
       toast.error("Failed to process order. Please try again.");
@@ -467,6 +580,91 @@ function Checkout() {
           </aside>
         </form>
       </section>
+
+      {showMockPaymentModal && mockOrderDetails && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-espresso/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-2xl bg-linen p-6 shadow-2xl border border-divider">
+            <div className="flex items-center justify-between border-b border-divider pb-4">
+              <div>
+                <h3 className="font-serif text-2xl text-espresso">Razorpay Sandbox</h3>
+                <p className="text-xs text-taupe font-mono">Order Ref: {mockOrderDetails.orderNumber}</p>
+              </div>
+              <button
+                type="button"
+                disabled={mockPaymentProcessing}
+                onClick={() => {
+                  setShowMockPaymentModal(false);
+                  setSubmitting(false);
+                  toast.error("Payment cancelled.");
+                }}
+                className="grid h-8 w-8 place-items-center rounded-full bg-parchment text-espresso hover:bg-clay hover:text-linen transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                <Lock size={14} />
+              </button>
+            </div>
+
+            <div className="mt-6 space-y-6">
+              {/* Informative alert box */}
+              <div className="rounded-xl border border-sage/20 bg-sage/5 p-4">
+                <div className="flex items-center gap-2 font-medium text-espresso text-sm">
+                  <ShieldCheck size={16} className="text-sage" />
+                  Secure Simulation Mode
+                </div>
+                <p className="mt-1 text-xs text-taupe leading-relaxed">
+                  Real API keys are not yet configured in environment variables.
+                  We have simulated a secure checkout experience to test the checkout loop.
+                </p>
+              </div>
+
+              {/* Niche theme Card detail simulation inputs */}
+              <div className="space-y-4 rounded-xl border border-divider bg-white/45 p-4 shadow-warm-sm">
+                <div className="text-xs uppercase tracking-wider text-taupe font-medium">— Simulated Card Details</div>
+                
+                <div>
+                  <label className="block text-[10px] text-espresso/70 uppercase tracking-wider mb-1">Cardholder Name</label>
+                  <input
+                    disabled
+                    value={form.fullName}
+                    className="w-full rounded-lg border border-divider/60 bg-linen/50 px-3 py-2 text-xs text-espresso outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] text-espresso/70 uppercase tracking-wider mb-1">Amount</label>
+                    <div className="w-full rounded-lg border border-divider/60 bg-linen/50 px-3 py-2 text-xs text-espresso font-semibold font-serif">
+                      {formatINR(mockOrderDetails.total)}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] text-espresso/70 uppercase tracking-wider mb-1">Payment Method</label>
+                    <div className="w-full rounded-lg border border-divider/60 bg-linen/50 px-3 py-2 text-xs text-espresso font-semibold uppercase tracking-wider">
+                      {form.payMethod}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Simulated execution button */}
+              <button
+                type="button"
+                disabled={mockPaymentProcessing}
+                onClick={handleMockPaymentSubmit}
+                className="w-full flex items-center justify-center gap-2.5 rounded-full bg-clay py-4 text-xs uppercase tracking-[0.2em] font-semibold text-linen hover:bg-espresso transition-all shadow-warm-sm active:scale-95 disabled:opacity-50 cursor-pointer"
+              >
+                {mockPaymentProcessing ? (
+                  <>
+                    <div className="h-4.5 w-4.5 animate-spin rounded-full border-2 border-linen border-t-transparent" />
+                    Processing Secure Payment...
+                  </>
+                ) : (
+                  <>Verify & Complete Payment · {formatINR(mockOrderDetails.total)}</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }
