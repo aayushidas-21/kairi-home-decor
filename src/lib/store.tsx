@@ -21,6 +21,7 @@ type StoreCtx = {
   loadingProducts: boolean;
   quickViewId: string | null;
   setQuickViewId: (id: string | null) => void;
+  hydrated: boolean;
 };
 
 const Ctx = createContext<StoreCtx | null>(null);
@@ -132,8 +133,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       loadingProducts,
       quickViewId,
       setQuickViewId,
+      hydrated,
     }),
-    [cart, wishlist, cartOpen, searchOpen, products, loadingProducts, quickViewId],
+    [cart, wishlist, cartOpen, searchOpen, products, loadingProducts, quickViewId, hydrated],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
