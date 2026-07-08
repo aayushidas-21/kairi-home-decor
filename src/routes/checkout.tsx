@@ -120,8 +120,8 @@ function Checkout() {
   const handleMockPaymentSubmit = async () => {
     if (!mockOrderDetails) return;
     setMockPaymentProcessing(true);
-    // Add a little delay as requested (e.g. 1.8 seconds)
-    await new Promise((resolve) => setTimeout(resolve, 1800));
+    // Add a 3-second delay as requested
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     try {
       await verifyRazorpayPayment({
         data: {
@@ -310,7 +310,7 @@ function Checkout() {
             handler: async (response: any) => {
               try {
                 toast.loading("Verifying payment... ✦", { id: "verify-toast" });
-                await new Promise((resolve) => setTimeout(resolve, 1500)); // slight delay as requested
+                await new Promise((resolve) => setTimeout(resolve, 3000)); // 3-second delay as requested
                 await verifyRazorpayPayment({
                   data: {
                     orderNumber: res.orderNumber,
