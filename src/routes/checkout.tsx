@@ -68,9 +68,15 @@ function Checkout() {
   });
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
+  const [initiatedOrder, setInitiatedOrder] = useState<any>(null);
   const [showMockPaymentModal, setShowMockPaymentModal] = useState(false);
   const [mockOrderDetails, setMockOrderDetails] = useState<any>(null);
   const [mockPaymentProcessing, setMockPaymentProcessing] = useState(false);
+
+  // Clear initiated order if cart items change to prevent checkout mismatches
+  useEffect(() => {
+    setInitiatedOrder(null);
+  }, [cart]);
 
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -250,28 +256,33 @@ function Checkout() {
 
     setSubmitting(true);
     try {
-      // Call server function to compute and write the order securely
-      const res = await createOrder({
-        data: {
-          userId: user?.uid || null,
-          email: form.email,
-          name: form.fullName,
-          phone: form.phone,
-          shippingAddress: {
-            address1: form.address1,
-            address2: form.address2 || "",
-            city: form.city,
-            state: form.state,
-            pincode: form.pincode,
-            country: form.country,
-          },
-          items: items.map((item) => ({
-            id: item.id,
-            qty: item.qty,
-          })),
-          payMethod: form.payMethod,
-        }
-      });
+      // Reuse initiated order if available to prevent duplicate order generation
+      let res = initiatedOrder;
+      if (!res) {
+        // Call server function to compute and write the order securely
+        res = await createOrder({
+          data: {
+            userId: user?.uid || null,
+            email: form.email,
+            name: form.fullName,
+            phone: form.phone,
+            shippingAddress: {
+              address1: form.address1,
+              address2: form.address2 || "",
+              city: form.city,
+              state: form.state,
+              pincode: form.pincode,
+              country: form.country,
+            },
+            items: items.map((item) => ({
+              id: item.id,
+              qty: item.qty,
+            })),
+            payMethod: form.payMethod,
+          }
+        });
+        setInitiatedOrder(res);
+      }
 
       if (form.payMethod === "cod") {
         completeOrderRedirect(res);
@@ -327,7 +338,10 @@ function Checkout() {
             },
             modal: {
               ondismiss: () => {
-                toast.error("Payment cancelled by user.");
+                toast.warning("Payment was not completed. You can retry paying now.", {
+                  description: `Order ${res.orderNumber} is saved.`,
+                  duration: 6000,
+                });
                 setSubmitting(false);
               }
             }
@@ -595,7 +609,10 @@ function Checkout() {
                 onClick={() => {
                   setShowMockPaymentModal(false);
                   setSubmitting(false);
-                  toast.error("Payment cancelled.");
+                  toast.warning("Payment was not completed. You can retry paying now.", {
+                    description: `Order ${mockOrderDetails.orderNumber} is saved.`,
+                    duration: 6000,
+                  });
                 }}
                 className="grid h-8 w-8 place-items-center rounded-full bg-parchment text-espresso hover:bg-clay hover:text-linen transition-colors disabled:opacity-50 cursor-pointer"
               >
