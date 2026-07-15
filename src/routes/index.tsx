@@ -56,106 +56,22 @@ function Home() {
 }
 
 function Hero() {
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
-  const [motionEnabled, setMotionEnabled] = useState(false);
-
-  // Initialize and check user prefers-reduced-motion setting
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setMotionEnabled(!mediaQuery.matches);
-
-    const handleMotionQuery = (e: MediaQueryListEvent) => {
-      setMotionEnabled(!e.matches);
-    };
-    mediaQuery.addEventListener("change", handleMotionQuery);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMotionQuery);
-    };
-  }, []);
-
-  // Listen to mousemove and deviceorientation for reactive parallax
-  useEffect(() => {
-    if (!motionEnabled || typeof window === "undefined") return;
-
-    // Mouse movement handler
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth, innerHeight } = window;
-      const x = (e.clientX - innerWidth / 2) / (innerWidth / 2);
-      const y = (e.clientY - innerHeight / 2) / (innerHeight / 2);
-      setCoords({ x, y });
-    };
-
-    // Device orientation gyroscope handler for mobile
-    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
-      if (e.beta === null || e.gamma === null) return;
-      // Clamp values and map to -1 to 1 range
-      const x = Math.max(-1, Math.min(1, e.gamma / 20));
-      const y = Math.max(-1, Math.min(1, (e.beta - 45) / 20)); // Assume 45deg standard viewing angle
-      setCoords({ x, y });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("deviceorientation", handleDeviceOrientation);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("deviceorientation", handleDeviceOrientation);
-    };
-  }, [motionEnabled]);
-
-  const imageTransform = motionEnabled
-    ? `scale(1.08) translate3d(${coords.x * -18}px, ${coords.y * -18}px, 0)`
-    : "scale(1.05)";
-
-  const contentTransform = motionEnabled
-    ? `perspective(1000px) rotateX(${coords.y * -4}deg) rotateY(${coords.x * 4}deg) translate3d(${coords.x * 12}px, ${coords.y * 12}px, 0)`
-    : "none";
-
-  const eyebrowTransform = motionEnabled
-    ? `translate3d(${coords.x * 18}px, ${coords.y * 18}px, 0)`
-    : "none";
-
   return (
     <section className="grain relative h-[90vh] min-h-[640px] w-full overflow-hidden bg-linen">
-      <div 
-        className="absolute inset-0 h-full w-full"
-        style={{
-          transform: imageTransform,
-          transition: "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
-        }}
-      >
-        <img
-          src={hero}
-          fetchPriority="high"
-          decoding="async"
-          alt="Cozy sunlit living room with linen sofas, warm wood coffee table, and clay-toned decor"
-          width={1600}
-          height={1100}
-          className="h-full w-full object-cover"
-        />
-      </div>
+      <img
+        src={hero}
+        fetchPriority="high"
+        decoding="async"
+        alt="Cozy sunlit living room with linen sofas, warm wood coffee table, and clay-toned decor"
+        width={1600}
+        height={1100}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
       <div className="absolute inset-0 bg-gradient-to-b from-linen/30 via-linen/0 to-linen/95 pointer-events-none" />
       <div className="absolute inset-0 bg-gradient-to-r from-linen/50 via-linen/0 to-linen/0 pointer-events-none" />
 
-      <div 
-        className="relative mx-auto flex h-full max-w-[1400px] flex-col justify-center px-6 lg:px-16"
-        style={{
-          transform: contentTransform,
-          transition: "transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)",
-        }}
-      >
-        <div 
-          className="eyebrow text-clay"
-          style={{
-            transform: eyebrowTransform,
-            transition: "transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)",
-          }}
-        >
-          — Est. 2026, India
-        </div>
+      <div className="relative mx-auto flex h-full max-w-[1400px] flex-col justify-center px-6 lg:px-16">
+        <div className="eyebrow text-clay">— Est. 2026, India</div>
         <h1 className="mt-5 max-w-3xl font-serif text-[3.5rem] leading-[0.95] text-espresso md:text-[6.5rem] lg:text-[7.5rem]">
           <span className="font-light">Spaces That</span>
           <br />
