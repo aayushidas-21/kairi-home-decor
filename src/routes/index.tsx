@@ -67,8 +67,8 @@ function Hero() {
         height={1100}
         className="absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-linen/40 via-transparent to-linen/90" />
-      <div className="absolute inset-0 bg-gradient-to-r from-linen/60 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-linen/30 via-linen/0 to-linen/95" />
+      <div className="absolute inset-0 bg-gradient-to-r from-linen/50 via-linen/0 to-linen/0" />
 
       <div className="relative mx-auto flex h-full max-w-[1400px] flex-col justify-center px-6 lg:px-16">
         <div className="eyebrow text-clay">— Est. 2026, India</div>
@@ -76,7 +76,7 @@ function Hero() {
           <span className="font-light">Spaces That</span>
           <br />
           <span className="italic">
-            Feel Like <span className="font-semibold" style={{ color: '#8f5c38' }}>You.</span>
+            Feel Like <span className="font-semibold text-clay">You.</span>
           </span>
         </h1>
         <p className="mt-8 max-w-md text-base text-espresso/75 md:text-lg">
