@@ -62,7 +62,7 @@ function Hero() {
         src={hero}
         fetchPriority="high"
         decoding="async"
-        alt="Sunlit linen table with a hand-thrown ceramic vase"
+        alt="Cozy sunlit living room with linen sofas, warm wood coffee table, and clay-toned decor"
         width={1600}
         height={1100}
         className="absolute inset-0 h-full w-full object-cover"
