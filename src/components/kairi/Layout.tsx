@@ -4,6 +4,7 @@ import { Footer } from "./Footer";
 import { CartDrawer } from "./CartDrawer";
 import { SearchModal } from "./SearchModal";
 import { QuickViewModal } from "./QuickViewModal";
+import { AIChatbot } from "./AIChatbot";
 
 export function Layout({ children }: { children: ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export function Layout({ children }: { children: ReactNode }) {
       <CartDrawer />
       <SearchModal />
       <QuickViewModal />
+      <AIChatbot />
     </div>
   );
 }
